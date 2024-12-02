@@ -13,7 +13,35 @@
   <body>
     {% extends 'main.html' %}
     {% block content %}
-    <h1>Hello world!</h1>
+
+    <div class="container mt-4">
+      <div class="row">
+        {% for livro in livros %}  
+        <div class="col-12 col-sm-6 col-md-4 col-lg-3 mb-4">
+            <div class="card h-100">
+              <!-- Capa do livro -->
+              <img src="{{ livro.capa.url }}" class="card-img-top" alt="{{ livro.titulo }}">
+              <div class="card-body d-flex flex-column">
+                <!-- Título do livro -->
+                <h5 class="card-title">{{ livro.titulo }}</h5>
+                <p class="card-text">
+                  <ul class="list-group list-group-flush">
+                    <!-- Autor -->
+                    <li class="list-group-item">Autor</li>
+                    <!-- Gênero -->
+                    <li class="list-group-item">{{ livro.genero }}</li>
+                  </ul>
+                </p>
+                <div class="mt-auto">
+                  <a href="/livro/{{livro.id}}" class="btn btn-primary">Saiba mais</a>
+                </div>
+              </div>
+            </div>
+          </div>
+        {% endfor %}
+      </div>
+    </div>
+
     {% endblock %}
     <!-- Optional JavaScript; choose one of the two! -->
 
