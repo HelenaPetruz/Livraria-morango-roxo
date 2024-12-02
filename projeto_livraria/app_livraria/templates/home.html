@@ -11,6 +11,7 @@
     <title>Livraria</title>
   </head>
   <body>
+    
     {% extends 'main.html' %}
     {% block content %}
 
@@ -27,9 +28,13 @@
                 <p class="card-text">
                   <ul class="list-group list-group-flush">
                     <!-- Autor -->
-                    <li class="list-group-item">Autor</li>
+                    {% for autor_livro in livro.autores.all %}
+                      <li  class="list-group-item">Autor(a): {{ autor_livro.autor.nome }}</li>
+                      {% empty %}
+                      <li class="text-muted">Sem autores cadastrados</li>
+                    {% endfor %}
                     <!-- Gênero -->
-                    <li class="list-group-item">{{ livro.genero }}</li>
+                    <li class="list-group-item">{{livro.genero}}</li>
                   </ul>
                 </p>
                 <div class="mt-auto">

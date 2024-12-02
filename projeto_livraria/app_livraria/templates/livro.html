@@ -17,32 +17,53 @@
               </div>
             </div>
           </div>
-        <!-- Sobre o autor -->
-        <div class="container-fluid px-3">
-            <div class="card mb-3 w-100" style="border-radius: 8px;">
-              <div class="row g-0 align-items-center">
-                <div class="col-12 text-center py-2">
-                  <h5 class="fw-bold">Sobre o autor:</h5>
-                </div>
-                <!-- Foto do autor -->
-                <div class="col-12 col-md-4 d-flex justify-content-center py-3 py-md-0">
-                  <img 
-                    src="{{ autor.foto.url }}" 
-                    class="img-fluid rounded-circle" 
-                    alt="Foto do Autor" 
-                    style="width: 150px; height: 150px; object-fit: cover; border: 3px solid #ddd;">
-                </div>
-                <!-- Descrição do autor -->
-                <div class="col-12 col-md-8">
-                  <div class="card-body text-center text-md-start">
-                    <h5 class="card-title">{{ autor.nome }}</h5>
-                    <p class="card-text">{{ autor.descricao }}</p>
+
+          {% for autor in autores %}  
+            <!-- Sobre o autor -->
+            <div class="container-fluid px-3">
+                <div class="card mb-3 w-100" style="border-radius: 8px;">
+                  <div class="row g-0 align-items-center">
+                    <div class="col-12 text-center py-2">
+                      <h5 class="fw-bold">Sobre o autor:</h5>
+                    </div>
+                    <!-- Foto do autor -->
+                    <div class="col-12 col-md-4 d-flex justify-content-center py-3 py-md-0">
+                      <img 
+                        src="{{ autor.foto.url }}" 
+                        class="img-fluid rounded-circle" 
+                        alt="Foto do Autor" 
+                        style="width: 150px; height: 150px; object-fit: cover; border: 3px solid #ddd;">
+                    </div>
+                    <!-- Descrição do autor -->
+                    <div class="col-12 col-md-8">
+                      <div class="card-body text-center text-md-start">
+                        <h5 class="card-title">{{ autor.nome }}</h5>
+                        <p class="card-text">{{ autor.descricao }}</p>
+                      </div>
+                    </div>
                   </div>
                 </div>
               </div>
+          {% endfor %}
+
+            <!-- Comentários -->
+          {% if comentarios %}
+            <div class="col-12 text-center py-2">
+              <h5 class="fw-bold">Comentários:</h5>
             </div>
-          </div>
-          
+            <div>
+              <ul class="list-group list-group-flush">
+                {% for comentario in comentarios %}
+                  <li class="list-group-item">
+                    <strong>@{{ comentario.user.username }}</strong>: {{ comentario.mensagem }}
+                  </li>
+                {% endfor %}
+              </ul>
+              {% else %}
+              <div class="py-4 text-center col-12 col-md-8">
+                <p class="text-muted">Nenhum comentário para este livro.</p>
+              </div>
+          {% endif %}
           
           
           

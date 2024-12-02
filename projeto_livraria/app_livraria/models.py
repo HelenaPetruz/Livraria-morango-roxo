@@ -1,8 +1,16 @@
 from django.db import models
+from django.contrib.auth.models import User
+
+class Genero_literario(models.Model):
+    nome = models.CharField(max_length=200)
+
+    def __str__(self):
+        return self.nome
+    
 
 class Livro(models.Model):
     titulo = models.CharField(max_length=200)
-    genero = models.CharField(max_length=200)
+    genero = models.ForeignKey(Genero_literario, on_delete=models.SET_NULL, null=True, blank=True)
     sinopse = models.TextField(max_length=4000)
     capa = models.ImageField(upload_to='capas_livros/', null=True, blank=True)
     
@@ -24,3 +32,13 @@ class Autor_livro(models.Model):
     class Meta:
         db_table = 'autor_livro'
         unique_together = ('autor', 'livro')
+
+class Comentario(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    livro = models.ForeignKey(Livro, on_delete=models.CASCADE)
+    mensagem = models.TextField()
+    updated = models.DateTimeField(auto_now=True)
+    created = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return self.mensagem[0:50]
