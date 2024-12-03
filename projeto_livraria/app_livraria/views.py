@@ -25,11 +25,15 @@ def home(request):
 def livro(request, pk):
     livro = Livro.objects.get(id=pk)
 
-    #autores relacionados ao livro
     autores_livros = Autor_livro.objects.filter(livro=livro).select_related('autor')
     autores = [autor_livro.autor for autor_livro in autores_livros]
 
-    #comentários relacionados ao livro
+    novo_comentario = Comentario()
+    novo_comentario.livro = livro
+    novo_comentario.mensagem = request.POST.get('mensagem')
+    #novo_comentario.user = 
+    novo_comentario.save
+
     comentarios = Comentario.objects.filter(livro=livro)
 
     context = {
