@@ -1,4 +1,4 @@
-<nav  class="navbar navbar-expand-lg navbar-light bg-light">
+<nav  class="navbar navbar-expand-lg navbar-light bg-light fixed-top">
     <div class="container-fluid">
       <a class="navbar-brand" href="#">Livraria</a>
       <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
@@ -17,5 +17,9 @@
           </li>
         </ul>
       </div>
+      <form class="d-flex" role="search" method="GET" action="{% url 'home' %}">
+        <input class="form-control me-2" type="text" placeholder="Pesquisar" aria-label="Search" name="pesquisar" value="{{ search_query }}">
+        <button type="submit" class="btn btn-primary"><span class="material-symbols-outlined">search</span></button>
+      </form>
     </div>
   </nav>

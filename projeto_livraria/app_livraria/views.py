@@ -1,12 +1,26 @@
 from django.shortcuts import render
 from .models import Livro, Autor, Autor_livro, Comentario, Genero_literario
 
-livros = {
-        'livros': Livro.objects.all()
-    }
+
 
 def home(request):
-    return render(request,'home.html', livros)
+    search_query = request.GET.get('pesquisar', '').strip()
+    generos_selecionados = request.GET.getlist('q')
+    livros = Livro.objects.all()
+
+    if generos_selecionados:
+        livros = Livro.objects.filter(generos__genero__nome__in = generos_selecionados).distinct()
+    
+    if search_query:
+        livros = livros.filter(titulo__istartswith = search_query)
+
+    context = {
+        'livros': livros,
+        'generos': Genero_literario.objects.all(),
+        'generos_selecionados': generos_selecionados,
+        'search_query': search_query,
+    }
+    return render(request,'home.html', context)
 
 def livro(request, pk):
     livro = Livro.objects.get(id=pk)

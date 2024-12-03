@@ -11,8 +11,17 @@
                   src="{{ livro.capa.url }}" alt="{{ livro.titulo }}" class="img-fluid rounded" 
                   style="max-width: 100%; height: auto; border: 2px solid #ddd;">
               </div>
-              <!-- Sinopse do livro -->
+
               <div class="col-12 col-md-8">
+                <!-- Gênero -->
+                <div class="container text-center">
+                    {% for genero_livro in livro.generos.all %}
+                        <span class="badge rounded-pill text-bg-dark d-inline-block mb-2 me-2" style="background-color: #007bff; color: white;">{{ genero_livro.genero.nome}}</span>
+                      {% empty %}
+                        <p class="text-muted">Sem gêneros literários cadastrados</p>
+                    {% endfor %}
+                </div>
+                <!-- Sinopse do livro -->
                 <p>{{ livro.sinopse }}</p>
               </div>
             </div>

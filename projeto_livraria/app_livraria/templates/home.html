@@ -17,33 +17,109 @@
 
     <div class="container mt-4">
       <div class="row">
-        {% for livro in livros %}  
-        <div class="col-12 col-sm-6 col-md-4 col-lg-3 mb-4">
-            <div class="card h-100">
-              <!-- Capa do livro -->
-              <img src="{{ livro.capa.url }}" class="card-img-top" alt="{{ livro.titulo }}">
-              <div class="card-body d-flex flex-column">
-                <!-- Título do livro -->
-                <h5 class="card-title">{{ livro.titulo }}</h5>
-                <p class="card-text">
-                  <ul class="list-group list-group-flush">
-                    <!-- Autor -->
-                    {% for autor_livro in livro.autores.all %}
-                      <li  class="list-group-item">Autor(a): {{ autor_livro.autor.nome }}</li>
-                      {% empty %}
-                      <li class="text-muted">Sem autores cadastrados</li>
-                    {% endfor %}
-                    <!-- Gênero -->
-                    <li class="list-group-item">{{livro.genero}}</li>
-                  </ul>
-                </p>
-                <div class="mt-auto">
-                  <a href="/livro/{{livro.id}}" class="btn btn-primary">Saiba mais</a>
+
+          <!-- Filtros -->
+          <div class="col-12 col-lg-3 mb-4">
+
+            <!-- Accordion em telas pequenas -->
+            <div class="d-lg-none">
+            <div class="accordion" id="filterAccordion">
+              <div class="accordion-item">
+                <h2 class="accordion-header" id="headingOne">
+                  <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+                    Filtros
+                  </button>
+                </h2>
+                <div id="collapseOne" class="accordion-collapse collapse show" aria-labelledby="headingOne" data-bs-parent="#filterAccordion">
+                  <div class="accordion-body">
+                    <form id="filter-form" action="{% url 'home' %}" method="get">
+                      {% for genero in generos %}
+                        <div class="form-check">
+                          <input class="form-check-input" type="checkbox" name="q" value="{{ genero.nome }}" id="flexCheck{{ forloop.counter }}"
+                            {% if genero.nome in generos_selecionados %}checked{% endif %}>
+                          <label class="form-check-label" for="flexCheck{{ forloop.counter }}">
+                            {{ genero.nome }}
+                          </label>
+                        </div>
+                      {% endfor %}
+                      <button type="submit" class="btn btn-primary">Aplicar</button>
+                    </form>                    
+                  </div>
                 </div>
               </div>
             </div>
+            </div>
+
+            <!-- Barra lateral para telas grandes -->
+            <div class="d-none d-lg-block border p-3" style = "position: fixed;">
+              <h5 class="fw-bold">Filtros</h5>
+              <form id="filter-form" action="{% url 'home' %}" method="get">
+                {% for genero in generos %}
+                  <div class="form-check">
+                    <input class="form-check-input" type="checkbox" name="q" value="{{ genero.nome }}" id="flexCheck{{ forloop.counter }}"
+                    {% if genero.nome in generos_selecionados %}checked{% endif %}>
+                    <label class="form-check-label" for="flexCheck{{ forloop.counter }}">
+                      {{ genero.nome }}
+                    </label>
+                  </div>
+                {% endfor %}
+                <button type="submit" class="btn btn-primary">Aplicar</button>
+              </form>      
+            </div>
+
           </div>
-        {% endfor %}
+
+
+          <div class="col-12 col-lg-9">
+              <div class="row">
+                {% if livros|length > 0 %}
+                {% for livro in livros %}  
+                <div class="col-12 col-sm-6 col-md-4 mb-4">
+                    <div class="card h-100">
+
+                    <!-- Capa do livro -->
+                    <a href="/livro/{{livro.id}}"><img src="{{ livro.capa.url }}" class="card-img-top" alt="{{ livro.titulo }}"></a>
+                    <div class="card-body d-flex flex-column">
+
+                      <!-- Título do livro -->
+                      <h5 class="card-title">{{ livro.titulo }}</h5>
+                      <p class="card-text">
+                        <ul class="list-group list-group-flush">
+                          
+                          <!-- Autor -->
+                          {% for autor_livro in livro.autores.all %}
+                            <li  class="list-group-item">Autor(a): {{ autor_livro.autor.nome }}</li>
+                            {% empty %}
+                            <li class="text-muted">Sem autores cadastrados</li>
+                          {% endfor %}
+
+                          <!-- Gênero -->
+                          <li class="list-group-item">
+                            <div class="container text-center">
+                                {% for genero_livro in livro.generos.all %}
+                                    <span class="badge rounded-pill text-bg-dark d-inline-block mb-2 me-2" style="background-color: #007bff; color: white;">{{ genero_livro.genero.nome}}</span>
+                                  {% empty %}
+                                    <p class="text-muted">Sem gêneros literários cadastrados</p>
+                                {% endfor %}
+                            </div>
+                          </li>
+                        </ul>
+                      </p>
+                      <div class="mt-auto">
+                        <a href="/livro/{{livro.id}}" class="btn btn-primary">Saiba mais</a>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                {% endfor %}
+                {% else %}
+                    <div class="col-12 text-center py-4">
+                        <p class="text-muted">Nenhum livro encontrado :(</p>
+                    </div>
+                {% endif %}
+          </div>
+        </div>
+
       </div>
     </div>
 
