@@ -58,14 +58,24 @@
             <!-- Comentários -->
 
             <div class="container-fluid py-3">
-              <form  method="post">
+              {% if request.user.is_authenticated %}
+              <form  method="POST" action="">
                 {% csrf_token %}
-                  <h5 class="fw-bold text-center">Deixe aqui sua avaliação sobre o livro!</h3>
-                  <div class="input-group">
-                    <textarea name="mensagem" class="form-control" id="exampleFormControlTextarea1" rows="4"></textarea>
+                  {% if comentarios %}
+                  <h3 class="fw-bold text-center">Deixe aqui sua avaliação sobre este livro!</h3>
+                  {% else %}
+                  <h3 class="fw-bold text-center">Seja o primeiro a avaliar este livro!</h3>
+                  {% endif %}
+                    <div class="form-floating">
+                      <textarea required value="{{comentario.mensagem}}" name="mensagem" class="form-control" placeholder="Leave a comment here" id="floatingTextarea2" style="height: 100px"></textarea>
+                      <label for="floatingTextarea2">Comente aqui...</label>                    
                   </div>
                     <button type="submit" class="btn btn-primary">Enviar</button>
               </form>
+              {% else %}
+              <h3 class="fw-bold text-center">Faça seu <a class="btn btn-primary" href="{% url 'login' %}">Login</a>, para comentar sobre este livro!</h3>
+              
+              {% endif %}
            </div>
 
           {% if comentarios %}
@@ -75,9 +85,24 @@
             <div>
               <ul class="list-group list-group-flush">
                 {% for comentario in comentarios %}
-                  <li class="list-group-item">
-                    <strong>@{{ comentario.user.username }}</strong>: {{ comentario.mensagem }}
-                  </li>
+                <li class="list-group-item">
+                  <div class="d-flex align-items-center mb-2">
+                      <a href="" class="text-decoration-none">
+                          <div class="d-inline-block px-3 py-1 rounded bg-light border fw-bold">
+                              @{{ comentario.user.username }}
+                          </div>
+                      </a>
+                  </div>
+                  <p>{{ comentario.mensagem }}</p>
+                  {% if request.user.is_authenticated and comentario.user.username == request.user.username %}
+                  <div class="mt-2">
+                      <a class="btn btn-primary btn-sm me-2 d-inline-block" href="">Editar</a>
+                      <a class="btn btn-danger btn-sm d-inline-block" href="">Excluir</a>
+                  </div>
+                  {% endif %}
+              </li>
+                  
+                  
                 {% endfor %}
               </ul>
               {% else %}

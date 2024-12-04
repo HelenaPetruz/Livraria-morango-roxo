@@ -15,6 +15,14 @@
     {% extends 'main.html' %}
     {% block content %}
 
+    <div class="container-fluid bg-light py-3">
+      <div class="row justify-content-center">
+          <div class="col-auto text-center">
+              <h4 class="fw-bold text-primary mb-0">Olá, {{ request.user }}!</h4>
+          </div>
+      </div>
+  </div>
+
     <div class="container mt-4">
       <div class="row">
 
