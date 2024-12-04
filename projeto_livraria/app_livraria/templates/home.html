@@ -72,6 +72,11 @@
 
           <div class="col-12 col-lg-9">
               <div class="row">
+                {% if livro_count > 1 %}
+                <p class="fw-bold">{{ livro_count }} livros disponíveis!</p>
+                {% else %}
+                <p class="fw-bold">{{ livro_count }} livro disponível!</p>
+                {% endif %}
                 {% if livros|length > 0 %}
                 {% for livro in livros %}  
                 <div class="col-12 col-sm-6 col-md-4 mb-4">

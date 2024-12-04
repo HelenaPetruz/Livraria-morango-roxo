@@ -18,12 +18,16 @@ def home(request):
             Q(autores__autor__nome__istartswith = search_query) |
             Q(generos__genero__nome__istartswith = search_query)
             ).distinct()
+    
+    livro_count = livros.count()
 
+    livros = livros.order_by('titulo')
     context = {
         'livros': livros,
         'generos': Genero_literario.objects.all(),
         'generos_selecionados': generos_selecionados,
         'search_query': search_query,
+        'livro_count':livro_count,
     }
     return render(request,'home.html', context)
 
