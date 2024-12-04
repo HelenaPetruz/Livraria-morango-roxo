@@ -1,4 +1,5 @@
 from django.shortcuts import render
+from django.db.models import Q
 from .models import Livro, Autor, Autor_livro, Comentario, Genero_literario
 
 
@@ -12,7 +13,11 @@ def home(request):
         livros = Livro.objects.filter(generos__genero__nome__in = generos_selecionados).distinct()
     
     if search_query:
-        livros = livros.filter(titulo__istartswith = search_query)
+        livros = livros.filter(
+            Q(titulo__istartswith = search_query) |
+            Q(autores__autor__nome__istartswith = search_query) |
+            Q(generos__genero__nome__istartswith = search_query)
+            ).distinct()
 
     context = {
         'livros': livros,
