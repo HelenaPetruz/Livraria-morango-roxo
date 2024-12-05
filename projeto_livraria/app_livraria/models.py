@@ -45,3 +45,13 @@ class Comentario(models.Model):
 
     def __str__(self):
         return self.mensagem[0:50]
+    
+class Pasta(models.Model):
+    titulo = models.CharField(max_length=200, null=True, blank=True)
+    descricao = models.TextField(max_length=3000, null=True, blank=True)
+    capa = models.ImageField(upload_to='capas_pastas/', null=True, blank=True, default='capas_pastas/default.jpg')
+    is_private = models.BooleanField(default=True)
+
+    def __str__(self):
+        return self.titulo
+    

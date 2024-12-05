@@ -13,6 +13,10 @@ urlpatterns = [
     #link inicial:
     path('', views.home, name='home'),
     path('livro/<int:pk>/', views.livro, name='livro'),
+    path('pastas/', views.pastas, name="pastas"),
+
+    path('delete-comentario/<str:pk>', views.deleteComentario, name="delete-comentario"),
+    path('editar-comentario/<int:comentario_id>/', views.editarComentario, name="editar-comentario"),
 ]
 
 if settings.DEBUG:

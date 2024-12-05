@@ -1,4 +1,5 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
+from django.http import HttpResponse
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.db.models import Q
@@ -86,21 +87,50 @@ def livro(request, pk):
             livro = livro,
             mensagem = request.POST.get('mensagem'),
         )
+        return redirect('livro', pk = livro.id)
 
     autores_livros = Autor_livro.objects.filter(livro=livro).select_related('autor')
     autores = [autor_livro.autor for autor_livro in autores_livros]
 
-    novo_comentario = Comentario()
-    novo_comentario.livro = livro
-    novo_comentario.mensagem = request.POST.get('mensagem')
-    #novo_comentario.user = 
-    novo_comentario.save
-
-    comentarios = Comentario.objects.filter(livro=livro)
+    comentarios = Comentario.objects.filter(livro=livro).order_by('-created')
+    usuarios_unicos = User.objects.filter(comentario__livro=livro).distinct()
 
     context = {
         'livro': livro,
         'autores': autores,
         'comentarios': comentarios,
+        'usuarios_unicos': usuarios_unicos.distinct(),
     }
     return render(request, 'livro.html', context)
+
+@login_required(login_url='login')
+def deleteComentario(request, pk):
+    comentario = Comentario.objects.get(id=pk)
+
+    if request.user != comentario.user:
+        return HttpResponse('Você não tem acesso à essa página!')
+
+    if request.method == 'POST':
+        comentario.delete()
+        return redirect('home')
+    return render(request, 'delete.html', {'obj': comentario})
+
+@login_required(login_url='login')
+def editarComentario(request, comentario_id):
+    comentario = get_object_or_404(Comentario, id=comentario_id)
+
+    if request.user != comentario.user:
+        return HttpResponse('Você não tem acesso à essa página!')
+    
+    if request.method == "POST":
+        mensagem = request.POST.get("mensagem")
+        comentario.mensagem = mensagem
+        comentario.save() 
+        return redirect('home')
+    
+    #pra caso method==get
+    return render(request, 'editar_comentario.html', {'comentario_editing': comentario})
+
+@login_required(login_url='login')
+def pastas(request):
+    return render(request, 'pastas.html')

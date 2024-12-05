@@ -58,59 +58,80 @@
             <!-- Comentários -->
 
             <div class="container-fluid py-3">
-              {% if request.user.is_authenticated %}
-              <form  method="POST" action="">
-                {% csrf_token %}
-                  {% if comentarios %}
-                  <h3 class="fw-bold text-center">Deixe aqui sua avaliação sobre este livro!</h3>
-                  {% else %}
-                  <h3 class="fw-bold text-center">Seja o primeiro a avaliar este livro!</h3>
-                  {% endif %}
-                    <div class="form-floating">
-                      <textarea required value="{{comentario.mensagem}}" name="mensagem" class="form-control" placeholder="Leave a comment here" id="floatingTextarea2" style="height: 100px"></textarea>
-                      <label for="floatingTextarea2">Comente aqui...</label>                    
-                  </div>
-                    <button type="submit" class="btn btn-primary">Enviar</button>
-              </form>
-              {% else %}
-              <h3 class="fw-bold text-center">Faça seu <a class="btn btn-primary" href="{% url 'login' %}">Login</a>, para comentar sobre este livro!</h3>
-              
-              {% endif %}
+            {% if request.user.is_authenticated %}
+                <form  method="POST" action="">
+                  {% csrf_token %}
+                    {% if comentarios %}
+                    <h3 class="fw-bold text-center">Deixe aqui sua avaliação sobre este livro!</h3>
+                    {% else %}
+                    <h3 class="fw-bold text-center">Seja o primeiro a avaliar este livro!</h3>
+                    {% endif %}
+                      <div class="form-floating">
+                        <textarea required value="{{comentario.mensagem}}" name="mensagem" class="form-control" placeholder="Leave a comment here" id="floatingTextarea2" style="height: 100px"></textarea>
+                        <label for="floatingTextarea2">Comente aqui...</label>                    
+                    </div>
+                      <button type="submit" class="btn btn-primary">Enviar</button>
+                </form>
+            {% else %}
+            <h3 class="fw-bold text-center">Faça seu <a class="btn btn-primary" href="{% url 'login' %}">Login</a>, para comentar sobre este livro!</h3>
+            {% endif %}
            </div>
 
-          {% if comentarios %}
-            <div class="col-12 text-center py-3">
-              <h5 class="fw-bold">Comentários:</h5>
+           {% if comentarios %}
+          <div class="row">
+            <div class="col-12 col-lg-12">
+              <div class="col-12 text-center py-3">
+                <h3 class="fw-bold">Comentários:</h3>
+              </div>
             </div>
-            <div>
-              <ul class="list-group list-group-flush">
-                {% for comentario in comentarios %}
-                <li class="list-group-item">
-                  <div class="d-flex align-items-center mb-2">
-                      <a href="" class="text-decoration-none">
-                          <div class="d-inline-block px-3 py-1 rounded bg-light border fw-bold">
+          </div>
+
+          <div class="row">
+            <div class="col-12 col-lg-8">
+                <ul class="list-group list-group-flush">
+                  {% for comentario in comentarios %}
+                  <li class="list-group-item">
+                    <div class="d-flex align-items-center mb-2">
+                      <a href="" class="text-decoration-none me-2">
+                          <div class="px-3 py-1 rounded bg-light border fw-bold">
                               @{{ comentario.user.username }}
                           </div>
                       </a>
-                  </div>
-                  <p>{{ comentario.mensagem }}</p>
-                  {% if request.user.is_authenticated and comentario.user.username == request.user.username %}
-                  <div class="mt-2">
-                      <a class="btn btn-primary btn-sm me-2 d-inline-block" href="">Editar</a>
-                      <a class="btn btn-danger btn-sm d-inline-block" href="">Excluir</a>
-                  </div>
-                  {% endif %}
-              </li>
+                      <small class="text-muted">À {{ comentario.created|timesince }} atrás</small>
+                    </div>
                   
-                  
-                {% endfor %}
-              </ul>
+                    <p>{{ comentario.mensagem }}</p>
+                    {% if request.user.is_authenticated and comentario.user.username == request.user.username %}
+                    <div class="mt-2">
+                        <a class="btn btn-primary btn-sm me-2 d-inline-block" href="{% url 'editar-comentario' comentario.id %}">Editar</a>
+                        <a class="btn btn-danger btn-sm d-inline-block" href="{% url 'delete-comentario' comentario.id %}">Excluir</a>
+                    </div>
+                    {% endif %}
+                </li>
+                  {% endfor %}
+                </ul>
+            </div>
+
+            <!-- Lista dos usernames -->
+            <div class="col-12 col-lg-4">
+              <div class="sticky-top" style="top: 56px;">
+                <h5 class="fw-bold text-center">Usuários que comentaram</h5>
+                <ul class="list-group list-group-flush">
+                  {% for usuario in usuarios_unicos %}
+                  <li class="list-group-item text-center">
+                    <a href="" class="text-decoration-none me-2">@{{ usuario.username }}</a>
+                  </li>
+                  {% endfor %}
+                </ul>
+              </div>
+            </div>
+
               {% else %}
               <div class="py-4 text-center col-12 col-md-8">
                 <p class="text-muted">Nenhum comentário para este livro.</p>
               </div>
-          {% endif %}
-          
+              {% endif %}
+          </div>
           
           
 
