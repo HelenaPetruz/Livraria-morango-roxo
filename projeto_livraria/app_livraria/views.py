@@ -6,7 +6,7 @@ from django.db.models import Q
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.forms import UserCreationForm
-from .models import Livro, Autor, Autor_livro, Comentario, Genero_literario
+from .models import Livro, Autor, Autor_livro, Comentario, Genero_literario, Pasta
 
 def loginPage(request):
     page = 'login'
@@ -133,4 +133,5 @@ def editarComentario(request, comentario_id):
 
 @login_required(login_url='login')
 def pastas(request):
-    return render(request, 'pastas.html')
+    pastas = Pasta.objects.filter(user=request.user).order_by('-created')
+    return render(request, 'pastas.html', {'pastas': pastas})

@@ -1,6 +1,45 @@
 {% extends 'main.html' %}
     {% block content %}
 
-    <h1>Pastas</h1>
+    {% if request.user.is_authenticated %}
+    <div class="container-fluid bg-light py-3">
+      <div class="row justify-content-center">
+          <div class="col-auto text-center">
+              <h4 class="fw-bold text-primary mb-0">Olá, {{ request.user }}!</h4>
+          </div>
+        </div>
+    </div>
+    {% endif %}
+
+
+    <h1 class="text-center">Pastas</h1>
+
+    {% if pastas %}
+    <div class="container my-4"> 
+        <div class="row g-4">
+            {% for pasta in pastas %}
+            <div class="col-sm-6 col-md-4 col-lg-3">
+            <div class="card h-100">
+                <a href=""><img src="{{ pasta.capa.url }}" class="card-img-top" alt="{{ pasta.titulo }}"></a>
+                <div class="card-body">
+                    <h5 class="card-title"> {{ pasta.titulo }} </h5>
+                    <p class="card-text"> {{ pasta.descricao }} </p>
+                    <a href="" class="btn btn-primary">Abrir</a>
+                </div>
+            </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+
+      {% else %}
+      <p class="text-muted text-center">Você ainda não criou nenhuma pasta...</p>
+      <p class="text-muted text-center">Clique no botão de + e comece a criar suas pastas!</p>
+      {% endif %}
+
+      <a href="" class="btn btn-primary rounded-circle position-fixed d-flex align-items-center justify-content-center"
+      style="width: 60px; height: 60px; bottom: 20px; right: 20px; z-index: 1030; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);">
+      <i class="bi bi-plus-lg"></i> <!-- Ícone de "+" do Bootstrap Icons -->
+   </a>
 
     {% endblock %}
