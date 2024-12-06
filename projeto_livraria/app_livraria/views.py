@@ -74,13 +74,9 @@ def home(request):
 
     if request.method == 'POST':
         livro_id = request.POST.get('livro_id')
-        livro = get_object_or_404(Livro, id=livro_id)
-        pasta_ids = request.POST.getlist('pastas')
-        for pasta_id in pasta_ids:
-            pasta = get_object_or_404(Pasta, id=pasta_id)
-            Pasta_livro.objects.create(livro=livro, pasta=pasta)
-    return redirect('home')
-    
+        pastas_selecionadas = request.POST.getlist('pasta[]')
+        for pasta_id in pastas_selecionadas:
+            Pasta_livro.objects.create(livro_id=livro_id, pasta_id=pasta_id)
 
     livro_count = livros.count()
 
