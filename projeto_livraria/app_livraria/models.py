@@ -55,6 +55,13 @@ class Pasta(models.Model):
     updated = models.DateTimeField(auto_now=True)
     created = models.DateTimeField(auto_now_add=True)
 
+    class Meta:
+        ordering = ['-updated', '-created']
+
     def __str__(self):
         return self.titulo
+    
+class Pasta_livro(models.Model):
+    pasta = models.ForeignKey(Pasta, on_delete=models.CASCADE, related_name='livros')
+    livro = models.ForeignKey(Livro, on_delete=models.CASCADE, related_name='pastas')
     

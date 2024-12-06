@@ -123,7 +123,62 @@
                         </ul>
                       </p>
                       <div class="mt-auto">
+
+                        {% if request.user.is_authenticated %}
+                        <div class="text-center">
+                          <a href="/livro/{{livro.id}}" class="btn-sm d-inline-block btn btn-primary me-2 " style="font-size: 1rem; padding: 0.5rem 1.5rem;">Saiba mais</a>
+                          <a href="" class=" btn-sm d-inline-block btn btn-primary rounded-circle " style="font-size: 1rem; padding: 0.5rem 0.6rem;" data-bs-toggle="modal" data-bs-target="#exampleModal">
+                            <i class="bi bi-bookmark"></i>
+                          </a>
+                        </div>
+
+                        <!-- Modal -->
+                        <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                          <div class="modal-dialog">
+                            <div class="modal-content">
+
+                              <div class="modal-header">
+                                <h1 class="modal-title fs-5" id="exampleModalLabel">Deseja adicionar este livro em uma pasta?</h1>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                              </div>
+                              
+                                {% if pastas %}
+                                <div class="modal-body">
+                                  Selecione a(s) pasta(s) em que o livro será adicionado:
+                                  <form method="POST" action="">
+                                    {% csrf_token %}
+                                    <input type="hidden" name="livro_id" value="{{ livro.id }}">
+                                      {% for pasta in pastas %}
+                                      <div class="form-check">
+                                        <input name="pasta" value="{{pasta.id}}" class="form-check-input" type="checkbox" id="pasta{{ pasta.id }}">
+                                        <label class="form-check-label" for="pasta{{ pasta.id }}"">{{pasta.titulo}}</label>
+                                      </div>
+                                      {% endfor %}
+                                </div>
+                                <div class="modal-footer">
+                                  <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
+                                  <button type="button" class="btn btn-primary">Salvar</button>
+                                </div>
+                              </form>
+
+                                {% else %}
+                                <div class="modal-body">
+                                    Crie uma pasta para adicionar este livro!
+                                </div>
+                                <div class="modal-footer">
+                                  <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
+                                  <a href="{% url 'criar-pasta' %}" class="btn btn-primary">Criar pasta</a>
+                                </div>
+                                {% endif %}
+
+                            </div>
+                          </div>
+                        </div>
+                        
+                        {% else %}
                         <a href="/livro/{{livro.id}}" class="btn btn-primary">Saiba mais</a>
+                        {% endif %}
+
                       </div>
                     </div>
                   </div>

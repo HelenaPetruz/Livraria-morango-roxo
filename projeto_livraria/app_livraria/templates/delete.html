@@ -10,8 +10,8 @@
                 <form class="form" method="POST" action="">
                     {% csrf_token %}
                         <p>Tem certeza que deseja excluir "{{obj}}"?</p>
-
-                        <button type="submit" class="btn btn-danger" value="Confirm">Excluir</button>
+                        <button type="submit" class="btn btn-danger btn-sm  d-inline-block" value="Confirm">Excluir</button>
+                        <a href="{{request.META.HTTP_REFERER}}" class="btn btn-primary btn-sm  d-inline-block">Voltar</a>
                 </form>
             </div>
     </div>

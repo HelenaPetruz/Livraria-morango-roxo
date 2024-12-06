@@ -6,7 +6,7 @@ from django.db.models import Q
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.forms import UserCreationForm
-from .models import Livro, Autor, Autor_livro, Comentario, Genero_literario, Pasta
+from .models import Livro, Autor, Autor_livro, Comentario, Genero_literario, Pasta, Pasta_livro
 
 def loginPage(request):
     page = 'login'
@@ -67,9 +67,25 @@ def home(request):
             Q(generos__genero__nome__istartswith = search_query)
             ).distinct()
     
+    if request.user.is_authenticated:
+        pastas = Pasta.objects.filter(user = request.user)
+    else:
+        pastas = None
+
+    if request.method == 'POST':
+        livro_id = request.POST.get('livro_id')
+        livro = get_object_or_404(Livro, id=livro_id)
+        pasta_ids = request.POST.getlist('pastas')
+        for pasta_id in pasta_ids:
+            pasta = get_object_or_404(Pasta, id=pasta_id)
+            Pasta_livro.objects.create(livro=livro, pasta=pasta)
+    return redirect('home')
+    
+
     livro_count = livros.count()
 
     livros = livros.order_by('titulo')
+
     context = {
         'livros': livros,
         'generos': Genero_literario.objects.all(),
@@ -77,6 +93,8 @@ def home(request):
         'search_query': search_query,
         'livro_count':livro_count,
     }
+    if pastas is not None:
+        context['pastas'] = pastas
     return render(request,'home.html', context)
 
 def livro(request, pk):
@@ -135,3 +153,70 @@ def editarComentario(request, comentario_id):
 def pastas(request):
     pastas = Pasta.objects.filter(user=request.user).order_by('-created')
     return render(request, 'pastas.html', {'pastas': pastas})
+
+@login_required(login_url='login')
+def criarPasta(request):
+    is_private = request.POST.get('visibilidade') == 'privado' #retorna true(privado) ou false(publico)
+    if request.method == 'POST':
+        if 'capa' in request.FILES:
+            capa = request.FILES.get('capa')
+        else:
+            capa = 'capas_pastas/default.png'
+        Pasta.objects.create(
+            user = request.user,
+            titulo = request.POST.get('titulo'),
+            descricao = request.POST.get('descricao'),
+            capa = capa,
+            is_private = is_private
+        )
+        return redirect('pastas')
+
+    return render(request, 'pasta_form.html')
+
+@login_required(login_url='login')
+def editarPasta(request, pk):
+    page = 'editing'
+    pasta = get_object_or_404(Pasta, id=pk)
+
+    if request.user != pasta.user:
+        return HttpResponse('Você não tem acesso à essa página!')
+    
+    if request.method == "POST":
+        is_private = request.POST.get('visibilidade') == 'privado' #retorna true(privado) ou false(publico)
+        pasta.titulo = request.POST.get('titulo')
+        pasta.descricao = request.POST.get('descricao')
+        pasta.is_private = is_private
+
+        if 'capa' in request.FILES:
+            pasta.capa = request.FILES.get('capa')
+        else:
+            pasta.capa = pasta.capa or 'capas_pastas/default.png'
+
+        pasta.save() 
+        return redirect('pastas')
+
+    context = {
+        'page': page,
+        'pasta': pasta,
+    }
+    return render(request, 'pasta_form.html', context)
+
+@login_required(login_url='login')
+def deletePasta(request, pk):
+    pasta = Pasta.objects.get(id = pk)
+    if request.method == 'POST':
+        pasta.delete()
+        return redirect('home')
+    return render(request, 'delete.html', {'obj':pasta})
+
+@login_required(login_url='login')
+def pasta(request, pk):
+    pasta = Pasta.objects.get(id = pk)
+    livros = Pasta_livro.objects.filter(pasta=pasta).select_related('livro')
+
+    context = {
+        'pasta': pasta,
+        'livros': livros,
+    }
+    return render(request, 'pasta.html', context)
+

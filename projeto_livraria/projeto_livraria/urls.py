@@ -13,7 +13,13 @@ urlpatterns = [
     #link inicial:
     path('', views.home, name='home'),
     path('livro/<int:pk>/', views.livro, name='livro'),
+
     path('pastas/', views.pastas, name="pastas"),
+    path('criar-pasta/', views.criarPasta, name="criar-pasta"),
+    path('editar-pasta/<str:pk>', views.editarPasta, name="editar-pasta"),
+    path('delete-pasta/<str:pk>', views.deletePasta, name="delete-pasta"),
+
+    path('pasta/<int:pk>/', views.pasta, name='pasta'),
 
     path('delete-comentario/<str:pk>', views.deleteComentario, name="delete-comentario"),
     path('editar-comentario/<int:comentario_id>/', views.editarComentario, name="editar-comentario"),
