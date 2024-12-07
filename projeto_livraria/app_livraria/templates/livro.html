@@ -3,6 +3,19 @@
 
         <!-- titulo do livro -->
         <h1 class="text-center fw-bold my-4">{{ livro.titulo }}</h1>
+
+        {% if request.user.is_authenticated %}
+        {% for pasta in pastas %}
+        <div class="form-check">
+          <input class="form-check-input" type="checkbox" value="" id="{{pasta.id}}" data-comando="{{pasta.titulo}}">
+          <label class="form-check-label" for="{{pasta.id}}">
+            {{ pasta.titulo }}
+          </label>
+          <p id="status">Status: Não marcado</p>
+        </div>
+        {% endfor %}
+        {% endif %}
+
         <div class="container-fluid px-3">
             <div class="row align-items-center">
               <!-- Capa do livro -->
@@ -92,7 +105,7 @@
                   {% for comentario in comentarios %}
                   <li class="list-group-item">
                     <div class="d-flex align-items-center mb-2">
-                      <a href="" class="text-decoration-none me-2">
+                      <a href="{% url 'user-perfil' comentario.user.id %}" class="text-decoration-none me-2">
                           <div class="px-3 py-1 rounded bg-light border fw-bold">
                               @{{ comentario.user.username }}
                           </div>
@@ -119,7 +132,7 @@
                 <ul class="list-group list-group-flush">
                   {% for usuario in usuarios_unicos %}
                   <li class="list-group-item text-center">
-                    <a href="" class="text-decoration-none me-2">@{{ usuario.username }}</a>
+                    <a href="{% url 'user-perfil' usuario.id %}" class="text-decoration-none me-2">@{{ usuario.username }}</a>
                   </li>
                   {% endfor %}
                 </ul>
@@ -132,7 +145,45 @@
               </div>
               {% endif %}
           </div>
-          
-          
 
+          <script>
+            document.addEventListener('DOMContentLoaded', function () {
+                const checkboxes = document.querySelectorAll('.form-check-input'); // Seleciona todas as checkboxes
+                const statusTexto = document.getElementById('status'); // Para mostrar o status
+    
+                // Adiciona o evento "change" a cada checkbox
+                checkboxes.forEach(checkbox => {
+                    checkbox.addEventListener('change', function () {
+                        const comando = checkbox.dataset.comando;
+                        const acao = checkbox.checked ? 'marcar' : 'desmarcar'; // Define a ação (marcar/desmarcar)
+    
+                        // Atualiza o status na página
+                        statusTexto.textContent = "Status: ${comando} ${acao}";
+    
+                        // Envia a requisição AJAX
+                        fetch('/comando/', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'X-CSRFToken': getCookie('csrftoken') // Obtém o CSRF token
+                            },
+                            body: JSON.stringify({ comando: comando, acao: acao })
+                        })
+                        .then(response => response.json())
+                        .then(data => {
+                            console.log(data.mensagem); // Mostra a resposta do servidor no console
+                        })
+                        .catch(error => {
+                            console.error('Erro ao executar o comando:', error);
+                        });
+                    });
+                });
+    
+                // Função para obter o CSRF token
+                function getCookie(name) {
+                    const cookieValue = document.cookie.split('; ').find(row => row.startsWith(name + '='));
+                    return cookieValue ? cookieValue.split('=')[1] : null;
+                }
+            });
+        </script>
     {% endblock %}

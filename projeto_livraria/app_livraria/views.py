@@ -1,12 +1,13 @@
 from django.shortcuts import render, redirect, get_object_or_404
-from django.http import HttpResponse
+from django.http import HttpResponse, JsonResponse
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.db.models import Q
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.forms import UserCreationForm
-from .models import Livro, Autor, Autor_livro, Comentario, Genero_literario, Pasta, Pasta_livro
+from .models import Livro, Autor, Autor_livro, Comentario, Genero_literario, Pasta, Pasta_livro, Profile, Formlivro
+import json
 
 def loginPage(request):
     page = 'login'
@@ -52,6 +53,49 @@ def registerPage(request):
 
     return render(request, 'login_registro.html', {'form': form}) 
 
+@login_required(login_url='login')
+def updateUser(request):
+    return render(request, 'editar_user.html')
+
+@login_required(login_url='login')
+def userPerfil(request, pk):
+    user = User.objects.get(id=pk)
+    pastas = user.pasta_set.all()
+
+    if Profile.objects.filter(user=user).exists():
+        perfil = Profile.objects.get(user=user)
+        context = {
+        'user': user,
+        'pastas': pastas,
+        'perfil': perfil
+        }
+
+    context = {
+        'user': user,
+        'pastas': pastas,
+        }
+    return render(request, 'perfil_user.html', context)
+
+@login_required(login_url='login')
+def criarPerfil(request):
+    page = 'criar-perfil'
+    if request.method == 'POST':
+        is_private = request.POST.get('visibilidade') == 'privado'
+        if 'imagem' in request.FILES:
+            imagem = request.FILES.get('imagem')
+        else:
+            imagem = 'foto_perfil/profile.jpg'
+        
+        Profile.objects.create(
+            user = request.user,
+            email = request.POST.get('email'),
+            bio = request.POST.get('bio'),
+            imagem = imagem,
+            is_private = is_private,
+        )
+        return redirect(request, 'perfil_user.html')
+
+
 def home(request):
     search_query = request.GET.get('pesquisar', '').strip()
     generos_selecionados = request.GET.getlist('q')
@@ -71,12 +115,6 @@ def home(request):
         pastas = Pasta.objects.filter(user = request.user)
     else:
         pastas = None
-
-    if request.method == 'POST':
-        livro_id = request.POST.get('livro_id')
-        pastas_selecionadas = request.POST.getlist('pasta[]')
-        for pasta_id in pastas_selecionadas:
-            Pasta_livro.objects.create(livro_id=livro_id, pasta_id=pasta_id)
 
     livro_count = livros.count()
 
@@ -109,13 +147,42 @@ def livro(request, pk):
     comentarios = Comentario.objects.filter(livro=livro).order_by('-created')
     usuarios_unicos = User.objects.filter(comentario__livro=livro).distinct()
 
+    pastas = Pasta.objects.filter(user=request.user).order_by('-created')
+
     context = {
         'livro': livro,
         'autores': autores,
         'comentarios': comentarios,
         'usuarios_unicos': usuarios_unicos.distinct(),
+        'pastas': pastas
     }
     return render(request, 'livro.html', context)
+
+def comando(request):
+    if request.method == 'POST':
+        try:
+            dados = json.loads(request.body)
+            comando = dados.get('comando')  # Comando enviado do JavaScript
+            acao = dados.get('acao')       # 'marcar' ou 'desmarcar'
+            print(acao)
+            print(comando)
+
+            if acao == 'marcar':
+                # Lógica para quando marcar
+                mensagem = f'O comando "{comando}" foi marcado com sucesso!'
+                
+
+            elif acao == 'desmarcar':
+                # Lógica para quando desmarcar
+                mensagem = f'O comando "{comando}" foi desmarcado com sucesso!'
+            else:
+                mensagem = 'Ação desconhecida.'
+
+            return JsonResponse({'status': 'sucesso', 'mensagem': mensagem})
+        except json.JSONDecodeError:
+            return JsonResponse({'status': 'erro', 'mensagem': 'Erro ao decodificar JSON.'})
+    else:
+        return JsonResponse({'status': 'erro', 'mensagem': 'Método não permitido.'})
 
 @login_required(login_url='login')
 def deleteComentario(request, pk):
@@ -215,4 +282,31 @@ def pasta(request, pk):
         'livros': livros,
     }
     return render(request, 'pasta.html', context)
+
+@login_required(login_url='login')
+def adicionarLivro(request, pk):
+    if request.method == 'POST':
+        form = Formlivro(request.POST)
+        if form.is_valid():
+            livro_id = pk
+            pastas_ids = request.POST.getlist('pasta') 
+
+        if pastas_ids:
+            for pasta_id in pastas_ids:
+                Pasta_livro.objects.create(livro=livro_id, pasta=pasta_id)
+        redirect('home')
+    return render(request, 'adicionar_livros.html', {'form': form})
+
+
+    # if request.method == 'POST':
+    #     form = Formlivro(request.POST)
+    #     if form.is_valid():
+    #         redirect('home')
+    # else:
+    #     form = Formlivro()
+    # context = {
+    #     'form': form,
+
+    # }
+    # return render(request, 'adicionar_livros.html', context)
 

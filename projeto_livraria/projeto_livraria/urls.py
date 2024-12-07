@@ -8,21 +8,28 @@ urlpatterns = [
     path('login/', views.loginPage, name="login"),
     path('logout/', views.logoutUser, name="logout"),
     path('register/', views.registerPage, name="register"),
+    path('perfil/<int:pk>', views.userPerfil, name="user-perfil"),
+    path('criar-perfil', views.criarPerfil, name="criar-perfil"),
+    path('editar-perfil', views.updateUser, name="editar-perfil"),
 
     path('admin/', admin.site.urls),
     #link inicial:
     path('', views.home, name='home'),
     path('livro/<int:pk>/', views.livro, name='livro'),
+    path('adicionar-livros/<int:pk>', views.adicionarLivro, name="adicionar-livros"),
 
     path('pastas/', views.pastas, name="pastas"),
     path('criar-pasta/', views.criarPasta, name="criar-pasta"),
     path('editar-pasta/<str:pk>', views.editarPasta, name="editar-pasta"),
     path('delete-pasta/<str:pk>', views.deletePasta, name="delete-pasta"),
+    
 
     path('pasta/<int:pk>/', views.pasta, name='pasta'),
 
     path('delete-comentario/<str:pk>', views.deleteComentario, name="delete-comentario"),
     path('editar-comentario/<int:comentario_id>/', views.editarComentario, name="editar-comentario"),
+
+    path('comando/', views.comando, name="comando")
 ]
 
 if settings.DEBUG:
