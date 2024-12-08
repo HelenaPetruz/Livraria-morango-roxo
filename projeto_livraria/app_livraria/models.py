@@ -3,10 +3,10 @@ from django.contrib.auth.models import User
 from django import forms
 
 class Profile(models.Model):
-    user = models.OneToOneField(User, on_delete=models.CASCADE)
-    email = models.EmailField(unique=True, null=True)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
     bio = models.TextField(null=True)
     imagem = models.ImageField(null=True, default="profile.jpg", upload_to='foto_perfil')
+    is_private = models.BooleanField(default=True)
 
     def __str__(self):
         return self.user.username

@@ -2,54 +2,258 @@
 
 {% block content %}
 
-<div class="container d-flex justify-content-center align-items-center vh-100">
-    <div class="col-12 col-md-6 col-lg-4">
-        <h1 class="fw-bold text-center">{{ user.username }}</h1>
-
         {% if page == 'criar-perfil' %}
-        <form method="POST" action="" enctype="multipart/form-data">
-            {% csrf_token %}
+        <div class="container d-flex justify-content-center align-items-center vh-100">
+            <div class="col-12 col-md-6 col-lg-4">
+                <h1 class="fw-bold text-center">Crie seu perfil</h1>
+                <form method="POST" action="" enctype="multipart/form-data">
+                    {% csrf_token %}
 
-            <div class="form-floating mb-3">
-                <input name="email" type="text" class="form-control" id="floatingInput" placeholder="name">
-                <label for="floatingInput">Email</label>
-            </div>
+                    <div class="form-floating">
+                        <textarea required name="bio" class="form-control" placeholder="Leave a comment here" id="floatingTextarea2" style="height: 100px"></textarea>
+                        <label for="floatingTextarea2">Bio</label>                    
+                    </div>
 
-            <div class="form-floating">
-                <textarea required name="bio" class="form-control" placeholder="Leave a comment here" id="floatingTextarea2" style="height: 100px"></textarea>
-                <label for="floatingTextarea2">Bio</label>                    
-            </div>
+                    <div class="mb-3">
+                        <label for="formFile" class="form-label">Insira sua foto de perfil</label>
+                        <input name="imagem" class="form-control" type="file" id="formFile">
+                    </div> 
 
-            <div class="mb-3">
-                <label for="formFile" class="form-label">Insira sua foto de perfil</label>
-                <input name="imagem" class="form-control" type="file" id="formFile">
-            </div> 
-
-            <div class="form-check">
-                <input name="visibilidade" value="publico" class="form-check-input" type="radio" id="flexRadioDefault1">
-                <label class="form-check-label" for="flexRadioDefault1">Perfil público (outros usuários podem ver seu perfil)</label>
+                    <div class="form-check">
+                        <input name="visibilidade" value="publico" class="form-check-input" type="radio" id="flexRadioDefault1">
+                        <label class="form-check-label" for="flexRadioDefault1">Perfil público (outros usuários podem ver seu perfil)</label>
+                    </div>
+                        <div class="form-check">
+                        <input name="visibilidade" value="privado" class="form-check-input" type="radio" id="flexRadioDefault2" checked>
+                        <label class="form-check-label" for="flexRadioDefault2">Perfil privado (apenas você pode ver seu perfil)</label>
+                    </div>
+                    <button type="submit" class="btn btn-primary w-100 mt-3">Criar perfil</button>
+                </form>
             </div>
-                <div class="form-check">
-                <input name="visibilidade" value="privado" class="form-check-input" type="radio" id="flexRadioDefault2" checked>
-                <label class="form-check-label" for="flexRadioDefault2">Perfil privado (apenas você pode ver seu perfil)</label>
-            </div>
-            <button type="submit" class="btn btn-primary w-100 mt-3">Criar perfil</button>
-        </form>
+        </div>
         {% endif %}
 
-        {% if perfil %}
-        <img src="{{ perfil.imagem.url }}" class="img-fluid rounded-circle" alt="Foto do Autor" 
-            style="width: 150px; height: 150px; object-fit: cover; border: 3px solid #ddd;">
-        <p>{{ perfil.email }}</p>
-        <p>{{ perfil.bio }}</p>
+        {% if page == 'editar-perfil' %}
+        <div class="container d-flex justify-content-center align-items-center vh-100">
+            <div class="col-12 col-md-6 col-lg-4">
+                <h1 class="fw-bold text-center">Edite seu perfil:</h1>
+                <form method="POST" action="" enctype="multipart/form-data">
+                    {% csrf_token %}
 
-        {% else %}
-        <a href="{% url 'criar-perfil' %}">Criar perfil</a>
+                    <div class="form-floating">
+                        <textarea required name="bio" class="form-control" placeholder="Leave a comment here" id="floatingTextarea2" style="height: 100px">{{ perfil.bio }}</textarea>
+                        <label for="floatingTextarea2">Bio</label>                    
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="formFile" class="form-label">Insira sua foto de perfil:</label>
+                        <input name="imagem" class="form-control" type="file" id="formFile">
+                        {% if perfil.imagem %}
+                            <p>Foto de perfil atual: <img src="{{ perfil.imagem.url }}" width="100" alt="foto atual"></p>
+                        {% endif %}
+                    </div> 
+
+                    <div class="form-check">
+                        <input name="visibilidade" value="publico" class="form-check-input" type="radio" id="flexRadioDefault1" {% if not perfil.is_private %}checked{% endif %}>
+                        <label class="form-check-label" for="flexRadioDefault1">Perfil público (outros usuários podem ver seu perfil)</label>
+                    </div>
+                        <div class="form-check">
+                        <input name="visibilidade" value="privado" class="form-check-input" type="radio" id="flexRadioDefault2" {% if not perfil.is_private %}checked{% endif %}>
+                        <label class="form-check-label" for="flexRadioDefault2">Perfil privado (apenas você pode ver seu perfil)</label>
+                    </div>
+                    <button type="submit" class="btn btn-primary w-100 mt-3">Salvar alterações</button>
+                </form>
+            </div>
+        </div>
         {% endif %}
 
-        
+        {% if page != 'criar-perfil' and page != 'editar-perfil' %}
+        {% if perfil and request.user == user %}
+        <div class="container d-flex justify-content-center align-items-center vh-100">
+            <div class="col-12 col-md-6 col-lg-4">
+                <img src="{{ perfil.imagem.url }}" class="img-fluid rounded-circle mx-auto mb-3 d-block" alt="Foto de perfil" 
+                style="width: 150px; height: 150px; object-fit: cover; border: 3px solid #ddd;">
+                <h1 class="fw-bold text-center">{{ user.username }}</h1>
 
-    </div>
-</div>
+                {% if perfil.is_private == True %}
+                    <p class="text-muted text-center">Perfil privado</p>
+                {% else %}
+                    <p class="text-muted text-center">Perfil público</p>
+                {% endif %}
+
+                <h5 class="fw-bold text-center">Bio:</h5>
+                <p class="text-center">{{ perfil.bio }}</p>
+
+                <a class="btn btn-primary btn-sm me-2 d-inline-block" href="{% url 'editar-perfil' %}">Editar perfil</a>
+                <a class="btn btn-danger btn-sm d-inline-block" href="{% url 'delete-perfil' %}">Excluir informações de perfil</a>
+            </div>
+        </div>
+
+            <!-- Pastas -->
+                <h1 class="text-center">Suas pastas</h1>
+                {% if pastas %}
+                <div class="container my-4"> 
+                    <div class="row g-4">
+                        {% for pasta in pastas %}
+                        <div class="col-sm-6 col-md-4 col-lg-3">
+                        <div class="card h-100">
+                            <a href=""><img src="{{ pasta.capa.url }}" class="card-img-top" alt="{{ pasta.titulo }}"></a>
+                            <div class="card-body">
+                                <h5 class="card-title"> {{ pasta.titulo }} </h5>
+                                <p class="card-text"> {{ pasta.descricao }} </p>
+                                <a href="{% url 'pasta' pasta.id %}" class="btn btn-primary btn-sm  d-inline-block">Abrir</a>
+                                <a href="{% url 'editar-pasta' pasta.id %}" class="btn btn-primary btn-sm d-inline-block">Editar</a>
+                                <a href="{% url 'delete-pasta' pasta.id %}" class="btn btn-danger btn-sm d-inline-block">Excluir</a>
+                            </div>
+                        </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+                {% else %}
+                <p class="text-muted text-center">Você ainda não criou nenhuma pasta...</p>
+                <p class="text-muted text-center">Clique no botão de + e comece a criar suas pastas!</p>
+                {% endif %}
+
+                <a href="{% url 'criar-pasta' %}" class="btn btn-primary rounded-circle position-fixed d-flex align-items-center justify-content-center"
+                style="width: 60px; height: 60px; bottom: 20px; right: 20px; z-index: 1030; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);">
+                <i class="bi bi-plus-lg"></i> 
+                </a>
+        {% endif %}
+
+        {% if not perfil and request.user == user %}
+        <div class="container d-flex justify-content-center align-items-center vh-100">
+            <div class="col-12 col-md-6 col-lg-4">
+                <h1 class="fw-bold text-center">{{ user.username }}</h1>
+                <a href="{% url 'criar-perfil' %}">Criar perfil</a>
+            </div>
+        </div>
+
+            <h1 class="text-center">Pastas</h1>
+            {% if pastas %}
+            <div class="container my-4"> 
+                <div class="row g-4">
+                    {% for pasta in pastas %}
+                    <div class="col-sm-6 col-md-4 col-lg-3">
+                    <div class="card h-100">
+                        <a href=""><img src="{{ pasta.capa.url }}" class="card-img-top" alt="{{ pasta.titulo }}"></a>
+                        <div class="card-body">
+                            <h5 class="card-title"> {{ pasta.titulo }} </h5>
+                            <p class="card-text"> {{ pasta.descricao }} </p>
+                            <a href="{% url 'pasta' pasta.id %}" class="btn btn-primary btn-sm  d-inline-block">Abrir</a>
+                            <a href="{% url 'editar-pasta' pasta.id %}" class="btn btn-primary btn-sm d-inline-block">Editar</a>
+                            <a href="{% url 'delete-pasta' pasta.id %}" class="btn btn-danger btn-sm d-inline-block">Excluir</a>
+                        </div>
+                    </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+            {% else %}
+            <p class="text-muted text-center">Você ainda não criou nenhuma pasta...</p>
+            <p class="text-muted text-center">Clique no botão de + e comece a criar suas pastas!</p>
+            {% endif %}
+            <a href="{% url 'criar-pasta' %}" class="btn btn-primary rounded-circle position-fixed d-flex align-items-center justify-content-center"
+            style="width: 60px; height: 60px; bottom: 20px; right: 20px; z-index: 1030; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);">
+            <i class="bi bi-plus-lg"></i> 
+            </a>
+        {% endif %}
+
+        {% if request.user != user  %}
+            {% if perfil and perfil.is_private == False %}
+            <div class="container d-flex justify-content-center align-items-center vh-100">
+                <div class="col-12 col-md-6 col-lg-4">
+                    <img src="{{ perfil.imagem.url }}" class="img-fluid rounded-circle mx-auto mb-3 d-block" alt="Foto de perfil" 
+                    style="width: 150px; height: 150px; object-fit: cover; border: 3px solid #ddd;">
+                    <h1 class="fw-bold text-center">{{ perfil.user.username }}</h1>
+                    <h5 class="fw-bold text-center">Bio:</h5>
+                    <p class="text-center">{{ perfil.bio }}</p>
+                </div>
+            </div>
+
+                {% if pastas and pasta.is_private == True %}
+                <h1 class="text-center">Pastas criadas por {{ perfil.user.username }}</h1>
+                <div class="container my-4"> 
+                    <div class="row g-4">
+                        {% for pasta in pastas %}
+                        <div class="col-sm-6 col-md-4 col-lg-3">
+                        <div class="card h-100">
+                            <a href=""><img src="{{ pasta.capa.url }}" class="card-img-top" alt="{{ pasta.titulo }}"></a>
+                            <div class="card-body">
+                                <h5 class="card-title"> {{ pasta.titulo }} </h5>
+                                <p class="card-text"> {{ pasta.descricao }} </p>
+                                <a href="{% url 'pasta' pasta.id %}" class="btn btn-primary btn-sm  d-inline-block">Abrir</a>
+                            </div>
+                        </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+                {% else %}
+                <p class="text-muted text-center">{{ perfil.user.username }} ainda não criou nenhuma pasta...</p>
+                {% endif %}
+
+            {% endif %}
+            {% if not perfil %}
+            <div class="container d-flex justify-content-center align-items-center vh-100">
+                <div class="col-12 col-md-6 col-lg-4">
+                    <p class="text-muted text-center">Este usuário não criou um perfil ainda</p>
+                </div>
+            </div>
+                {% if pastas and pasta.is_private == True %}
+                <h1 class="text-center">Pastas criadas por este usuário:</h1>
+                <div class="container my-4"> 
+                    <div class="row g-4">
+                        {% for pasta in pastas %}
+                        <div class="col-sm-6 col-md-4 col-lg-3">
+                        <div class="card h-100">
+                            <a href=""><img src="{{ pasta.capa.url }}" class="card-img-top" alt="{{ pasta.titulo }}"></a>
+                            <div class="card-body">
+                                <h5 class="card-title"> {{ pasta.titulo }} </h5>
+                                <p class="card-text"> {{ pasta.descricao }} </p>
+                                <a href="{% url 'pasta' pasta.id %}" class="btn btn-primary btn-sm  d-inline-block">Abrir</a>
+                            </div>
+                        </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+                {% else %}
+                <p class="text-muted text-center">Este usuário ainda não criou nenhuma pasta...</p>
+                {% endif %}
+            {% endif %}
+            {% if perfil.is_private == True %}
+            <div class="container d-flex justify-content-center align-items-center vh-100">
+                <div class="col-12 col-md-6 col-lg-4">
+                    <h1 class="fw-bold text-center">{{ perfil.user.username }}</h1>
+                    <p class="text-muted text-center">Este perfil é privado</p>
+                </div>
+            </div>
+            {% if pastas and pasta.is_private == True %}
+                <h1 class="text-center">Pastas criadas por este usuário:</h1>
+                <div class="container my-4"> 
+                    <div class="row g-4">
+                        {% for pasta in pastas %}
+                        <div class="col-sm-6 col-md-4 col-lg-3">
+                        <div class="card h-100">
+                            <a href=""><img src="{{ pasta.capa.url }}" class="card-img-top" alt="{{ pasta.titulo }}"></a>
+                            <div class="card-body">
+                                <h5 class="card-title"> {{ pasta.titulo }} </h5>
+                                <p class="card-text"> {{ pasta.descricao }} </p>
+                                <a href="{% url 'pasta' pasta.id %}" class="btn btn-primary btn-sm  d-inline-block">Abrir</a>
+                            </div>
+                        </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+                {% else %}
+                <p class="text-muted text-center">Este usuário ainda não criou nenhuma pasta...</p>
+                {% endif %}
+            {% endif %}
+        {% endif %}
+
+        {% endif %}
+
 
 {% endblock content %}

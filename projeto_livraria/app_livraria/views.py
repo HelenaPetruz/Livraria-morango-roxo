@@ -54,23 +54,21 @@ def registerPage(request):
     return render(request, 'login_registro.html', {'form': form}) 
 
 @login_required(login_url='login')
-def updateUser(request):
-    return render(request, 'editar_user.html')
-
-@login_required(login_url='login')
 def userPerfil(request, pk):
     user = User.objects.get(id=pk)
     pastas = user.pasta_set.all()
 
     if Profile.objects.filter(user=user).exists():
         perfil = Profile.objects.get(user=user)
+        pastas = perfil.user.pasta_set.all()
         context = {
         'user': user,
         'pastas': pastas,
         'perfil': perfil
         }
 
-    context = {
+    else:
+        context = {
         'user': user,
         'pastas': pastas,
         }
@@ -88,13 +86,52 @@ def criarPerfil(request):
         
         Profile.objects.create(
             user = request.user,
-            email = request.POST.get('email'),
             bio = request.POST.get('bio'),
             imagem = imagem,
             is_private = is_private,
         )
-        return redirect(request, 'perfil_user.html')
+        print(request.user.id)
+        return redirect('user-perfil', pk = request.user.id)
+    
+    return render(request, 'perfil_user.html',{'page':page})
 
+@login_required(login_url='login')
+def deletePerfil(request):
+    perfil = Profile.objects.get(user=request.user)
+
+    if request.method == 'POST':
+        perfil.delete()
+        return redirect('user-perfil', pk=request.user.id)
+    obj = 'as informações do seu perfil (bio, foto de perfil e visibilidade)'
+    return render(request, 'delete.html', {'obj': obj})
+
+@login_required(login_url='login')
+def updateUser(request):
+    page = 'editar-perfil'
+    perfil = get_object_or_404(Profile, user=request.user)
+
+    if request.user != perfil.user:
+        return HttpResponse('Você não tem acesso à essa página!')
+    
+    if request.method == "POST":
+        is_private = request.POST.get('visibilidade') == 'privado' #retorna true(privado) ou false(publico)
+        perfil.bio = request.POST.get('bio')
+        perfil.is_private = is_private
+
+        if 'imagem' in request.FILES:
+            perfil.imagem = request.FILES.get('imagem')
+        else:
+            perfil.imagem = perfil.imagem or 'foto_perfil/profile.jpg'
+
+        perfil.save() 
+        return redirect('user-perfil', pk=request.user.id)
+
+    context = {
+        'page': page,
+        'perfil': perfil,
+    }
+
+    return render(request, 'perfil_user.html', context)
 
 def home(request):
     search_query = request.GET.get('pesquisar', '').strip()

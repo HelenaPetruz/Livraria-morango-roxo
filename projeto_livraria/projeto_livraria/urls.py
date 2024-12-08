@@ -11,6 +11,7 @@ urlpatterns = [
     path('perfil/<int:pk>', views.userPerfil, name="user-perfil"),
     path('criar-perfil', views.criarPerfil, name="criar-perfil"),
     path('editar-perfil', views.updateUser, name="editar-perfil"),
+    path('delete-perfil', views.deletePerfil, name="delete-perfil"),
 
     path('admin/', admin.site.urls),
     #link inicial:
