@@ -2,6 +2,7 @@ from django.db import models
 from django.contrib.auth.models import User
 from django import forms
 
+
 class Profile(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     bio = models.TextField(null=True)
@@ -75,6 +76,11 @@ class Comentario(models.Model):
 class Pasta_livro(models.Model):
     pasta = models.ForeignKey(Pasta, on_delete=models.CASCADE, related_name='livros')
     livro = models.ForeignKey(Livro, on_delete=models.CASCADE, related_name='pastas')
+
+    class Meta:
+        unique_together = ('pasta', 'livro')
+
+
 
 class Formlivro(forms.ModelForm):
     class Meta:
