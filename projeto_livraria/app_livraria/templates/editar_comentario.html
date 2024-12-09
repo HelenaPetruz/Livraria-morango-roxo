@@ -1,0 +1,22 @@
+{% extends 'main.html' %}
+
+{% block content %}
+
+<div class="container d-flex justify-content-center align-items-center vh-100">
+    <div class="col-12 col-md-6 col-lg-8">
+
+        <form method="POST" action="{% url 'editar-comentario' comentario_editing.id %}">
+            {% csrf_token %}
+            <h3 class="fw-bold text-center">Editar comentário:</h3>
+            
+            <div class="form-floating py-3">
+            <textarea required name="mensagem" class="form-control" placeholder="Leave a comment here" id="floatingTextarea2" style="height: 100px">{{ comentario_editing.mensagem }}</textarea>                    
+            </div>
+            
+            <button type="submit" class="btn btn-primary">Atualizar</button>
+        </form>
+    
+    </div>
+</div>
+
+{% endblock content %}

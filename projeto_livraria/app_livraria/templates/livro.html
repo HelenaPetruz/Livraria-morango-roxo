@@ -3,6 +3,19 @@
 
         <!-- titulo do livro -->
         <h1 class="text-center fw-bold my-4">{{ livro.titulo }}</h1>
+
+        {% if request.user.is_authenticated %}
+        {% for pasta in pastas %}
+        <div class="form-check">
+          <input class="form-check-input" type="checkbox" value="" id="{{pasta.id}}" data-comando="{{pasta.titulo}}">
+          <label class="form-check-label" for="{{pasta.id}}">
+            {{ pasta.titulo }}
+          </label>
+          <p id="status">Status: Não marcado</p>
+        </div>
+        {% endfor %}
+        {% endif %}
+
         <div class="container-fluid px-3">
             <div class="row align-items-center">
               <!-- Capa do livro -->
@@ -11,40 +24,166 @@
                   src="{{ livro.capa.url }}" alt="{{ livro.titulo }}" class="img-fluid rounded" 
                   style="max-width: 100%; height: auto; border: 2px solid #ddd;">
               </div>
-              <!-- Sinopse do livro -->
+
               <div class="col-12 col-md-8">
+                <!-- Gênero -->
+                <div class="container text-center">
+                    {% for genero_livro in livro.generos.all %}
+                        <span class="badge rounded-pill text-bg-dark d-inline-block mb-2 me-2" style="background-color: #007bff; color: white;">{{ genero_livro.genero.nome}}</span>
+                      {% empty %}
+                        <p class="text-muted">Sem gêneros literários cadastrados</p>
+                    {% endfor %}
+                </div>
+                <!-- Sinopse do livro -->
                 <p>{{ livro.sinopse }}</p>
               </div>
             </div>
           </div>
-        <!-- Sobre o autor -->
-        <div class="container-fluid px-3">
-            <div class="card mb-3 w-100" style="border-radius: 8px;">
-              <div class="row g-0 align-items-center">
-                <div class="col-12 text-center py-2">
-                  <h5 class="fw-bold">Sobre o autor:</h5>
-                </div>
-                <!-- Foto do autor -->
-                <div class="col-12 col-md-4 d-flex justify-content-center py-3 py-md-0">
-                  <img 
-                    src="{{ autor.foto.url }}" 
-                    class="img-fluid rounded-circle" 
-                    alt="Foto do Autor" 
-                    style="width: 150px; height: 150px; object-fit: cover; border: 3px solid #ddd;">
-                </div>
-                <!-- Descrição do autor -->
-                <div class="col-12 col-md-8">
-                  <div class="card-body text-center text-md-start">
-                    <h5 class="card-title">{{ autor.nome }}</h5>
-                    <p class="card-text">{{ autor.descricao }}</p>
+
+          {% for autor in autores %}  
+            <!-- Sobre o autor -->
+            <div class="container-fluid px-3 py-3">
+                <div class="card mb-3 w-100" style="border-radius: 8px;">
+                  <div class="row g-0 align-items-center">
+                    <div class="col-12 text-center py-2">
+                      <h3 class="fw-bold">Sobre o autor:</h3>
+                    </div>
+                    <!-- Foto do autor -->
+                    <div class="col-12 col-md-4 d-flex justify-content-center py-3 py-md-0">
+                      <img 
+                        src="{{ autor.foto.url }}" 
+                        class="img-fluid rounded-circle" 
+                        alt="Foto do Autor" 
+                        style="width: 150px; height: 150px; object-fit: cover; border: 3px solid #ddd;">
+                    </div>
+                    <!-- Descrição do autor -->
+                    <div class="col-12 col-md-8">
+                      <div class="card-body text-center text-md-start">
+                        <h5 class="card-title">{{ autor.nome }}</h5>
+                        <p class="card-text">{{ autor.descricao }}</p>
+                      </div>
+                    </div>
                   </div>
                 </div>
               </div>
+          {% endfor %}
+
+            <!-- Comentários -->
+
+            <div class="container-fluid py-3">
+            {% if request.user.is_authenticated %}
+                <form  method="POST" action="">
+                  {% csrf_token %}
+                    {% if comentarios %}
+                    <h3 class="fw-bold text-center">Deixe aqui sua avaliação sobre este livro!</h3>
+                    {% else %}
+                    <h3 class="fw-bold text-center">Seja o primeiro a avaliar este livro!</h3>
+                    {% endif %}
+                      <div class="form-floating">
+                        <textarea required value="{{comentario.mensagem}}" name="mensagem" class="form-control" placeholder="Leave a comment here" id="floatingTextarea2" style="height: 100px"></textarea>
+                        <label for="floatingTextarea2">Comente aqui...</label>                    
+                    </div>
+                      <button type="submit" class="btn btn-primary">Enviar</button>
+                </form>
+            {% else %}
+            <h3 class="fw-bold text-center">Faça seu <a class="btn btn-primary" href="{% url 'login' %}">Login</a>, para comentar sobre este livro!</h3>
+            {% endif %}
+           </div>
+
+           {% if comentarios %}
+          <div class="row">
+            <div class="col-12 col-lg-12">
+              <div class="col-12 text-center py-3">
+                <h3 class="fw-bold">Comentários:</h3>
+              </div>
             </div>
           </div>
-          
-          
-          
-          
 
+          <div class="row">
+            <div class="col-12 col-lg-8">
+                <ul class="list-group list-group-flush">
+                  {% for comentario in comentarios %}
+                  <li class="list-group-item">
+                    <div class="d-flex align-items-center mb-2">
+                      <a href="{% url 'user-perfil' comentario.user.id %}" class="text-decoration-none me-2">
+                          <div class="px-3 py-1 rounded bg-light border fw-bold">
+                              @{{ comentario.user.username }}
+                          </div>
+                      </a>
+                      <small class="text-muted">À {{ comentario.created|timesince }} atrás</small>
+                    </div>
+                  
+                    <p>{{ comentario.mensagem }}</p>
+                    {% if request.user.is_authenticated and comentario.user.username == request.user.username %}
+                    <div class="mt-2">
+                        <a class="btn btn-primary btn-sm me-2 d-inline-block" href="{% url 'editar-comentario' comentario.id %}">Editar</a>
+                        <a class="btn btn-danger btn-sm d-inline-block" href="{% url 'delete-comentario' comentario.id %}">Excluir</a>
+                    </div>
+                    {% endif %}
+                </li>
+                  {% endfor %}
+                </ul>
+            </div>
+
+            <!-- Lista dos usernames -->
+            <div class="col-12 col-lg-4">
+              <div class="sticky-top" style="top: 56px;">
+                <h5 class="fw-bold text-center">Usuários que comentaram</h5>
+                <ul class="list-group list-group-flush">
+                  {% for usuario in usuarios_unicos %}
+                  <li class="list-group-item text-center">
+                    <a href="{% url 'user-perfil' usuario.id %}" class="text-decoration-none me-2">@{{ usuario.username }}</a>
+                  </li>
+                  {% endfor %}
+                </ul>
+              </div>
+            </div>
+
+              {% else %}
+              <div class="py-4 text-center col-12 col-md-8">
+                <p class="text-muted">Nenhum comentário para este livro.</p>
+              </div>
+              {% endif %}
+          </div>
+
+          <script>
+            document.addEventListener('DOMContentLoaded', function () {
+                const checkboxes = document.querySelectorAll('.form-check-input'); // Seleciona todas as checkboxes
+                const statusTexto = document.getElementById('status'); // Para mostrar o status
+    
+                // Adiciona o evento "change" a cada checkbox
+                checkboxes.forEach(checkbox => {
+                    checkbox.addEventListener('change', function () {
+                        const comando = checkbox.dataset.comando;
+                        const acao = checkbox.checked ? 'marcar' : 'desmarcar'; // Define a ação (marcar/desmarcar)
+    
+                        // Atualiza o status na página
+                        statusTexto.textContent = "Status: ${comando} ${acao}";
+    
+                        // Envia a requisição AJAX
+                        fetch('/comando/', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'X-CSRFToken': getCookie('csrftoken') // Obtém o CSRF token
+                            },
+                            body: JSON.stringify({ comando: comando, acao: acao })
+                        })
+                        .then(response => response.json())
+                        .then(data => {
+                            console.log(data.mensagem); // Mostra a resposta do servidor no console
+                        })
+                        .catch(error => {
+                            console.error('Erro ao executar o comando:', error);
+                        });
+                    });
+                });
+    
+                // Função para obter o CSRF token
+                function getCookie(name) {
+                    const cookieValue = document.cookie.split('; ').find(row => row.startsWith(name + '='));
+                    return cookieValue ? cookieValue.split('=')[1] : null;
+                }
+            });
+        </script>
     {% endblock %}

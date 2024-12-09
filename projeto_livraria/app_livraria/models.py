@@ -1,14 +1,50 @@
 from django.db import models
+from django.contrib.auth.models import User
+from django import forms
+
+class Profile(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    bio = models.TextField(null=True)
+    imagem = models.ImageField(null=True, default="profile.jpg", upload_to='foto_perfil')
+    is_private = models.BooleanField(default=True)
+
+    def __str__(self):
+        return self.user.username
+
+class Genero_literario(models.Model):
+    nome = models.CharField(max_length=200)
+
+    def __str__(self):
+        return self.nome
+    
+class Pasta(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    titulo = models.CharField(max_length=200, null=True, blank=True)
+    descricao = models.TextField(max_length=3000, null=True, blank=True)
+    capa = models.ImageField(upload_to='capas_pastas/', null=True, blank=True, default='capas_pastas/default.png')
+    is_private = models.BooleanField(default=True)
+    updated = models.DateTimeField(auto_now=True)
+    created = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ['-updated', '-created']
+
+    def __str__(self):
+        return self.titulo
 
 class Livro(models.Model):
     titulo = models.CharField(max_length=200)
-    genero = models.CharField(max_length=200)
     sinopse = models.TextField(max_length=4000)
     capa = models.ImageField(upload_to='capas_livros/', null=True, blank=True)
+    pasta = models.ManyToManyField(Pasta)
     
     def __str__(self):
         return self.titulo
-    
+
+class Genero_livro (models.Model):
+    livro = models.ForeignKey(Livro, on_delete=models.CASCADE, related_name='generos')
+    genero = models.ForeignKey(Genero_literario, on_delete=models.CASCADE, related_name='livros')
+
 class Autor(models.Model):
     nome = models.CharField(max_length=200)
     descricao = models.TextField(max_length=4000)
@@ -24,3 +60,24 @@ class Autor_livro(models.Model):
     class Meta:
         db_table = 'autor_livro'
         unique_together = ('autor', 'livro')
+
+class Comentario(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    livro = models.ForeignKey(Livro, on_delete=models.CASCADE)
+    mensagem = models.TextField()
+    updated = models.DateTimeField(auto_now=True)
+    created = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return self.mensagem[0:50]
+    
+    
+class Pasta_livro(models.Model):
+    pasta = models.ForeignKey(Pasta, on_delete=models.CASCADE, related_name='livros')
+    livro = models.ForeignKey(Livro, on_delete=models.CASCADE, related_name='pastas')
+
+class Formlivro(forms.ModelForm):
+    class Meta:
+        model = Livro
+        fields = ['titulo', 'pasta']
+    

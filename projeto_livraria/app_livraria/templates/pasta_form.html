@@ -1,0 +1,81 @@
+{% extends 'main.html' %}
+
+{% block content %}
+
+<div class="container d-flex justify-content-center align-items-center vh-100">
+    <div class="col-12 col-md-6 col-lg-4">
+
+        {% if page == 'editing' %}
+        <h3 class="fw-bold text-center">Editar pasta:</h3>
+        <form method="POST" action="" enctype="multipart/form-data">
+            {% csrf_token %}
+
+            <div class="form-floating mb-3">
+                <input name="titulo" value="{{ pasta.titulo }}" type="text" class="form-control" id="floatingInput" placeholder="name">
+                <label for="floatingInput">Título da pasta</label>
+            </div>
+
+            <div class="form-floating">
+                <textarea required name="descricao" class="form-control" placeholder="Leave a comment here" id="floatingTextarea2" style="height: 100px">{{ pasta.descricao }}</textarea>
+                <label for="floatingTextarea2">Descrição </label>                    
+            </div>
+
+            <div class="mb-3">
+                <label for="formFile" class="form-label">Insira uma capa para sua pasta</label>
+                <input name="capa" class="form-control" type="file" id="formFile">
+                {% if pasta.capa %}
+                    <p>Capa atual: <img src="{{ pasta.capa.url }}" width="100" alt="Capa atual"></p>
+                {% endif %}
+            </div> 
+
+            <div class="form-check">
+                <input name="visibilidade" value="publico" class="form-check-input" type="radio" id="flexRadioDefault1" {% if not pasta.is_private %}checked{% endif %}>
+                <label class="form-check-label" for="flexRadioDefault1">Pasta pública (outros usuários podem ver sua pasta)</label>
+            </div>
+                <div class="form-check">
+                <input name="visibilidade" value="privado" class="form-check-input" type="radio" id="flexRadioDefault2" {% if not pasta.is_private %}checked{% endif %}>
+                <label class="form-check-label" for="flexRadioDefault2">Pasta privada (apenas você pode ver sua pasta)</label>
+            </div>
+
+            <button type="submit" class="btn btn-primary w-100 mt-3">Atualizar</button>
+        </form>
+
+        {% else %}
+        <h3 class="fw-bold text-center">Crie sua pasta, para guardar seus livros!</h3>
+
+        <form method="POST" action="" enctype="multipart/form-data">
+            {% csrf_token %}
+
+            <div class="form-floating mb-3">
+                <input name="titulo" type="text" class="form-control" id="floatingInput" placeholder="name">
+                <label for="floatingInput">Título da pasta</label>
+            </div>
+
+            <div class="form-floating">
+                <textarea required name="descricao" class="form-control" placeholder="Leave a comment here" id="floatingTextarea2" style="height: 100px"></textarea>
+                <label for="floatingTextarea2">Descrição </label>                    
+            </div>
+
+            <div class="mb-3">
+                <label for="formFile" class="form-label">Insira uma capa para sua pasta</label>
+                <input name="capa" class="form-control" type="file" id="formFile">
+            </div> 
+
+            <div class="form-check">
+                <input name="visibilidade" value="publico" class="form-check-input" type="radio" id="flexRadioDefault1">
+                <label class="form-check-label" for="flexRadioDefault1">Pasta pública (outros usuários podem ver sua pasta)</label>
+            </div>
+                <div class="form-check">
+                <input name="visibilidade" value="privado" class="form-check-input" type="radio" id="flexRadioDefault2" checked>
+                <label class="form-check-label" for="flexRadioDefault2">Pasta privada (apenas você pode ver sua pasta)</label>
+            </div>
+            
+
+            <button type="submit" class="btn btn-primary w-100 mt-3">Criar</button>
+        </form>
+        {% endif %}
+
+    </div>
+</div>
+
+{% endblock content %}
