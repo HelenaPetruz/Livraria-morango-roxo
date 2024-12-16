@@ -123,19 +123,7 @@
                         </ul>
                       </p>
                       <div class="mt-auto">
-
-                        {% if request.user.is_authenticated %}
-                        <div class="text-center">
-                          <a href="/livro/{{livro.id}}" class="btn-sm d-inline-block btn btn-primary me-2 " style="font-size: 1rem; padding: 0.5rem 1.5rem;">Saiba mais</a>
-                          <a href="" class=" btn-sm d-inline-block btn btn-primary rounded-circle " style="font-size: 1rem; padding: 0.5rem 0.6rem;" data-bs-toggle="modal" data-bs-target="#modalLivro{{ livro.id }}">
-                            <i class="bi bi-bookmark"></i>
-                          </a>
-                        </div>
-                        
-                        {% else %}
                         <a href="/livro/{{livro.id}}" class="btn btn-primary">Saiba mais</a>
-                        {% endif %}
-
                       </div>
                     </div>
                   </div>

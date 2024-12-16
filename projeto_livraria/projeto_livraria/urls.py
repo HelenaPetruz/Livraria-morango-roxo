@@ -16,8 +16,10 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     #link inicial:
     path('', views.home, name='home'),
+    
     path('livro/<int:pk>/', views.livro, name='livro'),
     path('adicionar-livros/<int:pk>', views.adicionarLivro, name="adicionar-livros"),
+    path('delete-livro-da-pasta/<int:id_pasta>/<int:id_livro>', views.deleteLivroDaPasta, name='delete-livro-da-pasta'),
 
     path('pastas/', views.pastas, name="pastas"),
     path('criar-pasta/', views.criarPasta, name="criar-pasta"),

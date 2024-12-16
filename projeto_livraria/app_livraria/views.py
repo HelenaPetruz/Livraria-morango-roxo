@@ -244,6 +244,18 @@ def comando(request):
     else:
         return JsonResponse({'status': 'erro', 'mensagem': 'Método não permitido.'})
 
+def deleteLivroDaPasta(request, id_pasta, id_livro):
+    livro = Livro.objects.get(id=id_livro)
+    pasta = Pasta.objects.get(id=id_pasta)
+    if request.method == 'POST':
+        p = Pasta_livro.objects.filter(pasta=pasta)
+        l = p.filter(livro = livro).distinct()
+        l.delete()
+        return redirect('pasta', pk = id_pasta)
+    obj = str(livro.titulo)+'" da pasta "'+str(pasta.titulo)
+    return render(request, 'delete.html', {'obj': obj})
+
+
 @login_required(login_url='login')
 def deleteComentario(request, pk):
     comentario = Comentario.objects.get(id=pk)

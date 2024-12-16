@@ -44,7 +44,8 @@
                     </ul>
                   </p>
                   <div class="mt-auto">
-                    <a href="/livro/{{item.livro.id}}" class="btn btn-primary">Saiba mais</a>
+                    <a href="/livro/{{item.livro.id}}" class="btn btn-primary d-inline-block">Saiba mais</a>
+                    <a href="{% url 'delete-livro-da-pasta' pasta.id item.livro.id %}" class="btn btn-danger btn-sm d-inline-block">Excluir</a>
                   </div>
                 </div>
               </div>
