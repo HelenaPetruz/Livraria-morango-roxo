@@ -1,0 +1,208 @@
+:root {
+    --bs-primary: #6f42c1;
+    --bs-danger: #dc3545;
+    --bs-success: #8e44ad;
+    --bs-info: #9b59b6;
+    --bs-warning: #f39c12;
+    --bs-light: #f8f9fa;
+    --bs-dark: #343a40;
+    --transition-speed: 0.3s;
+}
+
+/* Botões */
+.btn-primary {
+    background-color: var(--bs-primary);
+    border-color: var(--bs-primary);
+    color: #fff;
+    transition: background-color var(--transition-speed), transform var(--transition-speed);
+}
+
+.btn-primary:hover {
+    background-color: darken(var(--bs-primary), 10%);
+    transform: scale(1.05);
+}
+
+.btn-danger {
+    background-color: var(--bs-danger);
+    border-color: var(--bs-danger);
+    color: #fff;
+    transition: background-color var(--transition-speed), transform var(--transition-speed);
+}
+
+.btn-danger:hover {
+    background-color: darken(var(--bs-danger), 10%);
+    transform: translateY(-3px);
+}
+
+/* Texto */
+.text-primary {
+    color: var(--bs-primary);
+    font-weight: bold;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2);
+}
+
+.text-danger {
+    color: var(--bs-danger);
+    font-style: italic;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2);
+}
+
+/* Badge */
+.badge {
+    background-color: var(--bs-primary);
+    color: #fff;
+    padding: 0.4em 0.7em;
+    font-size: 0.9rem;
+    border-radius: 0.5rem;
+    box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.2);
+    transition: transform var(--transition-speed), box-shadow var(--transition-speed);
+}
+
+.badge:hover {
+    transform: scale(1.1);
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.3);
+}
+
+.bg-primary {
+    background-color: var(--bs-primary);
+    color: #fff;
+    padding: 1rem;
+    border-radius: 0.5rem;
+    transition: box-shadow var(--transition-speed);
+}
+
+.bg-primary:hover {
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+/* Animações */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.messages {
+    list-style: none;
+    padding: 0;
+    margin: 1rem 0;
+    animation: fadeIn var(--transition-speed) ease-in-out;
+}
+
+.messages li {
+    background-color: var(--bs-info);
+    color: #fff;
+    padding: 0.8rem;
+    margin-bottom: 0.5rem;
+    border-radius: 0.4rem;
+    box-shadow: 0px 2px 6px rgba(0, 0, 0, 0.15);
+    transition: transform var(--transition-speed), background-color var(--transition-speed);
+}
+
+.messages li:hover {
+    background-color: darken(var(--bs-info), 10%);
+    transform: scale(1.02);
+}
+
+/* Navbar */
+.navbar {
+    position: fixed;
+    top: 0;
+    width: 100%;
+    z-index: 1000;
+    background-color: var(--bs-primary);
+}
+
+.navbar a {
+    color: #fff;
+    transition: color var(--transition-speed);
+}
+
+.navbar a:hover {
+    color: var(--bs-warning);
+}
+
+.container {
+    padding-top: 100px;
+    max-width: 800px;
+    margin: auto;
+    padding-top: 120px;
+}
+
+/* Responsivo */
+@media (max-width: 768px) {
+    .btn-primary {
+        font-size: 0.9rem;
+        padding: 0.5rem 1rem;
+    }
+
+    .badge {
+        font-size: 0.8rem;
+        padding: 0.3rem 0.6rem;
+    }
+
+    .navbar {
+        font-size: 0.9rem;
+    }
+}
+
+/* Centralizar o formulário na tela */
+form {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    max-width: 400px;
+    margin: auto;
+}
+
+/*Formulário */
+form input[type="text"],
+form input[type="password"] {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    box-sizing: border-box;
+    font-size: 1rem;
+}
+
+form label {
+    font-weight: bold;
+    margin-top: 10px;
+}
+
+form button[type="submit"] {
+    margin-top: 20px;
+    padding: 10px;
+    background-color: #6f42c1;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+form button[type="submit"]:hover {
+    background-color: #5a3790;
+}
+
+p {
+    margin-top: 10px;
+    text-align: center;
+    font-size: 0.9rem;
+}
+
+a {
+    color: #6f42c1;
+    text-decoration: none;
+}
+
+a:hover {
+    text-decoration: underline;
+}

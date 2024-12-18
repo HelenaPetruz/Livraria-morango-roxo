@@ -119,8 +119,9 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 STATICFILES_DIRS = [
-    '/Livraria-morango-roxo/projeto_livraria/app_livraria/templates/static'
+    BASE_DIR / 'app_livraria/static'
 ]
+
 STATIC_ROOT = BASE_DIR / 'staticfiles'
 
 # Default primary key field type

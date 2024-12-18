@@ -2,43 +2,43 @@
 
 {% block content %}
 
-{% if page == 'login' %}
+<!-- Container principal que centraliza o conteúdo -->
 <div class="container d-flex justify-content-center align-items-center vh-100">
-    <div class="col-12 col-md-6 col-lg-4">
-        <h1 class="fw-bold text-center">Login</h1>
-        <form method="POST" action="">
-            {% csrf_token %}
-
-            <div class="form-floating mb-3">
-                <input name="username" type="text" class="form-control" id="floatingInput" placeholder="name">
-                <label for="floatingInput">Username</label>
-            </div>
-
-            <div class="form-floating mb-3">
-                <input name="password" type="password" class="form-control" id="floatingPassword" placeholder="Password">
-                <label for="floatingPassword">Senha</label>
-            </div>
-
-            <button type="submit" class="btn btn-primary w-100" value="Login">Entrar</button>
-        </form>
-        <p mt-3>Não se cadastrou ainda?</p>
-        <a href="{% url 'register' %}">Cadastre-se</a>
+    <!-- Aumentando a largura do formulário -->
+    <div class="col-16 col-md-12 col-lg-8"> 
+        {% if page == 'login' %}
+            <!-- Página de Login -->
+            <h1 class="fw-bold text-center mb-4">Login</h1>
+            <form method="POST" action="">
+                {% csrf_token %}
+                <div class="form-floating mb-3">
+                    <input name="username" type="text" class="form-control" id="floatingInput" placeholder="Username" required>
+                    <label for="floatingInput">Username</label>
+                </div>
+                <div class="form-floating mb-3">
+                    <input name="password" type="password" class="form-control" id="floatingPassword" placeholder="Password" required>
+                    <label for="floatingPassword">Senha</label>
+                </div>
+                <button type="submit" class="btn btn-primary w-100">Entrar</button>
+            </form>
+            <p class="mt-3 text-center">
+                Não se cadastrou ainda? 
+                <a href="{% url 'register' %}" class="text-primary">Cadastre-se</a>
+            </p>
+        {% else %}
+            <!-- Página de Cadastro -->
+            <h1 class="fw-bold text-center mb-4">Cadastre-se</h1>
+            <form method="POST" action="">
+                {% csrf_token %}
+                {{ form.as_p }}
+                <button type="submit" class="btn btn-primary w-100">Cadastrar</button>
+            </form>
+            <p class="mt-3 text-center">
+                Já tem conta? 
+                <a href="{% url 'login' %}" class="text-primary">Login</a>
+            </p>
+        {% endif %}
     </div>
 </div>
-
-{% else %}
-<div class="container d-flex justify-content-center align-items-center vh-100">
-    <div class="col-12 col-md-6 col-lg-4">
-        <h1 class="fw-bold text-center">Cadastre-se</h1>
-        <form method="POST" action="">
-            {% csrf_token %}
-            {{ form.as_p }}
-            <button type="submit" class="btn btn-primary w-100">Cadastrar</button>
-        </form>
-        <p>Já fez o cadastro?</p>
-        <a href="{% url 'login' %}">Login</a>
-    </div>
-</div>
-{% endif %}
 
 {% endblock content %}
