@@ -1,4 +1,5 @@
 {% extends 'main.html' %}
+
     {% block content %}
 
     <style>
@@ -6,7 +7,7 @@
         background-color: #9a27e7;
         border-color: #9a27e7;
       }
-  
+    
       .btn-primary:hover {
         background-color: #771fb3;
         border-color: #771fb3;
@@ -14,19 +15,60 @@
     </style>
 
         <br>
+        <br>
         <!-- titulo do livro -->
         <h1 class="text-center fw-bold my-4">{{ livro.titulo }}</h1>
 
         {% if request.user.is_authenticated %}
-        {% for pasta in pastas %}
-        <div class="form-check">
-          <input class="form-check-input" type="checkbox" value="" id="{{pasta.id}}" data-comando="{{pasta.titulo}}">
-          <label class="form-check-label" for="{{pasta.id}}">
-            {{ pasta.titulo }}
-          </label>
-          <p id="status">Status: Não marcado</p>
+          <div class="text-center">
+            <a href="" class="btn btn-primary position-fixed d-flex align-items-center justify-content-center rounded-3" 
+              style="width: 90px; height: 50px; bottom: 20px; right: 20px; z-index: 1030; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);" data-bs-toggle="modal" data-bs-target="#modalLivro{{ livro.id }}">
+              <i class="bi bi-bookmark mx-1"></i> Salvar 
+            </a>
+          </div>
+
+        <!-- Modal -->
+        <div class="modal fade" id="modalLivro{{ livro.id }}" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+          <div class="modal-dialog">
+            <div class="modal-content">
+
+              <div class="modal-header">
+                <h1 class="modal-title fs-5" id="exampleModalLabel">Deseja adicionar este livro em uma pasta?</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+              </div>
+              
+              <div class="modal-body">
+                {% if pastas %}
+                {% for pasta in pastas %}
+                <div class="form-check">
+                  <input class="form-check-input" type="checkbox" value="" id="{{pasta.id}}" data-pasta="{{pasta.id}}" data-livro="{{livro.id}}">
+                  <label class="form-check-label" for="{{pasta.id}}">
+                    {{ pasta.titulo }}
+                  </label>
+                  <p hidden="true" id="status">Status: Não marcado</p>
+                </div>
+                {% endfor %}
+              </div>
+
+                <div class="modal-footer">
+                  <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
+                  <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Salvar</button>
+                </div>
+              </form>
+
+                {% else %}
+                <div class="modal-body">
+                    Crie uma pasta para adicionar este livro!
+                </div>
+                <div class="modal-footer">
+                  <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
+                  <a href="{% url 'criar-pasta' %}" class="btn btn-primary">Criar pasta</a>
+                </div>
+                {% endif %}
+
+            </div>
+          </div>
         </div>
-        {% endfor %}
         {% endif %}
 
         <div class="container-fluid px-3">
@@ -168,7 +210,8 @@
                 // Adiciona o evento "change" a cada checkbox
                 checkboxes.forEach(checkbox => {
                     checkbox.addEventListener('change', function () {
-                        const comando = checkbox.dataset.comando;
+                        const pasta = checkbox.dataset.pasta;
+                        const livro = checkbox.dataset.livro;
                         const acao = checkbox.checked ? 'marcar' : 'desmarcar'; // Define a ação (marcar/desmarcar)
     
                         // Atualiza o status na página
@@ -181,7 +224,7 @@
                                 'Content-Type': 'application/json',
                                 'X-CSRFToken': getCookie('csrftoken') // Obtém o CSRF token
                             },
-                            body: JSON.stringify({ comando: comando, acao: acao })
+                            body: JSON.stringify({ pasta: pasta, livro: livro, acao: acao })
                         })
                         .then(response => response.json())
                         .then(data => {
