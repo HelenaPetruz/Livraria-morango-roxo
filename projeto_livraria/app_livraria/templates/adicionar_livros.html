@@ -2,10 +2,23 @@
 
 {% block content %}
 
+<style>
+    .btn-save {
+      background-color: #9a27e7;
+      color: white;
+    }
+  
+    .btn-save:hover {
+      background-color: #771fb3;
+      color: white;
+      transition: all 0.3s ease;
+    }
+  </style>
+
 <form method="POST">
     {% csrf_token %}
     {{ form.as_p }}
-    <button type="submit">Salvar</button>
+    <button type="submit" class="btn-save">Salvar</button>
 </form>
 
-{% endblock content %}
+{% endblock content %
