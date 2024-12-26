@@ -184,15 +184,23 @@ def livro(request, pk):
     comentarios = Comentario.objects.filter(livro=livro).order_by('-created')
     usuarios_unicos = User.objects.filter(comentario__livro=livro).distinct()
 
-    pastas = Pasta.objects.filter(user=request.user).order_by('-created')
-
     context = {
         'livro': livro,
         'autores': autores,
         'comentarios': comentarios,
         'usuarios_unicos': usuarios_unicos.distinct(),
-        'pastas': pastas
     }
+
+    if request.user.is_authenticated:
+        pastas = Pasta.objects.filter(user=request.user).order_by('-created')
+        context = {
+            'livro': livro,
+            'autores': autores,
+            'comentarios': comentarios,
+            'usuarios_unicos': usuarios_unicos.distinct(),
+            'pastas': pastas
+        }
+
     return render(request, 'livro.html', context)
 
 def comando(request):
