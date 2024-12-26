@@ -2,6 +2,18 @@
 
 {% block content %}
 
+<style>
+    .btn-primary {
+      background-color: #9a27e7;
+      border-color: #9a27e7;
+    }
+
+    .btn-primary:hover {
+      background-color: #771fb3;
+      border-color: #771fb3;
+    }
+</style>
+
 {% if page == 'login' %}
 <!-- Container principal que centraliza o conteúdo -->
 <div class="container d-flex justify-content-center align-items-center vh-100">
@@ -29,7 +41,7 @@
 
 {% else %}
 <div class="container d-flex justify-content-center align-items-center vh-100">
-    <div class="col-12 col-md-6 col-lg-4">
+    <div class="col-12 col-md-8 col-lg-6">
         <h1 class="fw-bold text-center">Cadastre-se</h1>
         <form method="POST" action="">
             {% csrf_token %}
