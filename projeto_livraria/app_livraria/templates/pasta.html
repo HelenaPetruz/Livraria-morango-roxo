@@ -1,7 +1,22 @@
 {% extends 'main.html' %}
 {% block content %}
-<br>
+
+<style>
+  .btn-primary {
+    background-color: #9a27e7;
+    border-color: #9a27e7;
+  }
+
+  .btn-primary:hover {
+    background-color: #771fb3;
+    border-color: #771fb3;
+  }
+</style>
+
 <div class="m-2">
+    <br>
+    <br>
+    <br>
     <h1 class="text-center fw-bold">Livros da pasta "{{pasta.titulo}}"</h1>
     <p class="text-muted text-center">Criada em {{ pasta.created }} </p>
     <p class="fw-bold mx-5">Descrição:</p>
