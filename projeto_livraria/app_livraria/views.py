@@ -147,11 +147,6 @@ def home(request):
             Q(autores__autor__nome__istartswith = search_query) |
             Q(generos__genero__nome__istartswith = search_query)
             ).distinct()
-    
-    if request.user.is_authenticated:
-        pastas = Pasta.objects.filter(user = request.user)
-    else:
-        pastas = None
 
     livro_count = livros.count()
 
@@ -164,8 +159,6 @@ def home(request):
         'search_query': search_query,
         'livro_count':livro_count,
     }
-    if pastas is not None:
-        context['pastas'] = pastas
     return render(request,'home.html', context)
 
 def livro(request, pk):
