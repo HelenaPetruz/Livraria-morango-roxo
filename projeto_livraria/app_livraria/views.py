@@ -197,22 +197,38 @@ def livro(request, pk):
     return render(request, 'livro.html', context)
 
 def comando(request):
+    mensagem = ""
+
     if request.method == 'POST':
         try:
             dados = json.loads(request.body)
-            comando = dados.get('comando')  # Comando enviado do JavaScript
+            pasta_id = dados.get('pasta')
+            livro_id = dados.get('livro')  # Comando enviado do JavaScript
             acao = dados.get('acao')       # 'marcar' ou 'desmarcar'
             print(acao)
-            print(comando)
+            print(pasta_id)
+            print(livro_id)
 
+            pasta = Pasta.objects.get(id=pasta_id)
+            livro = Livro.objects.get(id = livro_id)
             if acao == 'marcar':
-                # Lógica para quando marcar
-                mensagem = f'O comando "{comando}" foi marcado com sucesso!'
+                try:
+                    
+                    Pasta_livro.objects.create(
+                        pasta = pasta,
+                        livro = livro
+                    )
+                    print('deu tudo certo!')
+                    mensagem = 'Livro adicionado com sucesso à pasta!'
+                except Exception as e:
+                    print(e)
+                    mensagem = 'Não foi possível adicionar o livro'
                 
-
             elif acao == 'desmarcar':
-                # Lógica para quando desmarcar
-                mensagem = f'O comando "{comando}" foi desmarcado com sucesso!'
+                p = Pasta_livro.objects.filter(pasta=pasta)
+                l = p.filter(livro = livro).distinct()
+                l.delete()
+                mensagem = 'livro removido da pasta'
             else:
                 mensagem = 'Ação desconhecida.'
 
